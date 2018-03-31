@@ -11,12 +11,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "Neat\\HTTP\\": "classes/"
+            "Neat\\Http\\": "classes/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Neat\\HTTP\\Test\\": "tests/"
+            "Neat\\Http\\Test\\": "tests/"
         }
     },
     "require": {
