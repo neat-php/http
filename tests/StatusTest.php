@@ -1,8 +1,8 @@
 <?php
 namespace Neat\Test\Http;
 
-use PHPUnit\Framework\TestCase;
 use Neat\Http\Status;
+use PHPUnit\Framework\TestCase;
 
 class StatusTest extends TestCase
 {
@@ -68,7 +68,9 @@ EOT;
     {
         preg_match_all('/(\d{3})\s+\|\s+(\w+(?:[\s-]\w+)*)/', self::RFC_STATUS_OVERVIEW, $matches, PREG_SET_ORDER);
 
-        return array_map(function ($match) { return [$match[1], $match[2]]; }, $matches);
+        return array_map(function ($match) {
+            return [$match[1], $match[2]];
+        }, $matches);
     }
 
     /**

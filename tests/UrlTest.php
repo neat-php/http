@@ -1,8 +1,8 @@
 <?php
 namespace Neat\Test\Http;
 
-use PHPUnit\Framework\TestCase;
 use Neat\Http\Url;
+use PHPUnit\Framework\TestCase;
 
 class UrlTest extends TestCase
 {
