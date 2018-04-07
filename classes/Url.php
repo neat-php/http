@@ -250,7 +250,7 @@ class Url
      * Get new URL with scheme
      *
      * @param string $scheme Scheme to use or null to remove the scheme
-     * @return self
+     * @return static
      */
     public function withScheme($scheme)
     {
@@ -265,7 +265,7 @@ class Url
      *
      * @param string $username Username to use or null to remove the username
      * @param string $password Associated password
-     * @return self
+     * @return static
      */
     public function withUserInfo($username, $password = '')
     {
@@ -280,7 +280,7 @@ class Url
      * Get new URL with host
      *
      * @param string $host Host name or null to remove the host
-     * @return self
+     * @return static
      */
     public function withHost($host)
     {
@@ -294,7 +294,7 @@ class Url
      * Get new URL with port
      *
      * @param int|null $port Port number to add or null to remove the port number
-     * @return self
+     * @return static
      * @throws \InvalidArgumentException for invalid ports.
      */
     public function withPort(int $port = null)
@@ -313,7 +313,7 @@ class Url
      * Get new URL instance with path
      *
      * @param string $path Path or empty string to remove the path
-     * @return self
+     * @return static
      */
     public function withPath($path)
     {
@@ -327,7 +327,7 @@ class Url
      * Get new URL instance with query
      *
      * @param string $query Query string or empty string to remove the query
-     * @return self
+     * @return static
      */
     public function withQuery($query)
     {
@@ -341,7 +341,7 @@ class Url
      * Get new URL instance with fragment
      *
      * @param string $fragment Fragment or empty string to remove the fragment
-     * @return self
+     * @return static
      */
     public function withFragment($fragment)
     {
