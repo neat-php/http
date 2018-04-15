@@ -29,8 +29,8 @@ class Request extends Message
      */
     public function __construct($method = 'GET', $url = null, $body = null)
     {
-        $this->method = strtoupper($method);
-        $this->url    = $url instanceof Url ? $url : new Url($url);
+        $this->setMethod($method);
+        $this->setUrl($url);
         $this->setBody($body);
     }
 
@@ -77,5 +77,53 @@ class Request extends Message
     public function url()
     {
         return $this->url;
+    }
+
+    /**
+     * Set method
+     *
+     * @param string $method
+     */
+    protected function setMethod($method)
+    {
+        $this->method = strtoupper($method);
+    }
+
+    /**
+     * Set URL
+     *
+     * @param string $url
+     */
+    protected function setUrl($url)
+    {
+        $this->url = $url instanceof Url ? $url : new Url($url);
+    }
+
+    /**
+     * Get new request with method
+     *
+     * @param string $method
+     * @return Request
+     */
+    public function withMethod($method)
+    {
+        $new = clone $this;
+        $new->setMethod($method);
+
+        return $new;
+    }
+
+    /**
+     * Get new request with URL
+     *
+     * @param string|Url $url
+     * @return Request
+     */
+    public function withUrl($url)
+    {
+        $new = clone $this;
+        $new->setUrl($url);
+
+        return $new;
     }
 }

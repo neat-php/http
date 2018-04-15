@@ -2,6 +2,7 @@
 namespace Neat\Http\Test;
 
 use Neat\Http\Request;
+use Neat\Http\Url;
 use PHPUnit\Framework\TestCase;
 
 class RequestTest extends TestCase
@@ -43,5 +44,26 @@ class RequestTest extends TestCase
         $this->assertSame('https://localhost/resource?id=1', (string) $request->url());
         $this->assertsame('POST', $request->method());
         $this->assertsame("POST /resource?id=1 HTTP/1.1\r\nContent-Type: application/json\r\n\r\n{\"json\":true}", (string) $request);
+    }
+
+    /**
+     * Test with method
+     */
+    public function testWithMethod()
+    {
+        $request = new Request('GET', 'http://localhost/');
+
+        $this->assertSame('POST', $request->withMethod('POST')->method());
+    }
+
+    /**
+     * Test with URL
+     */
+    public function testWithUrl()
+    {
+        $request = new Request('GET', 'http://localhost/');
+        $url     = new Url('https://example.com/');
+
+        $this->assertSame($url, $request->withUrl($url)->url());
     }
 }
