@@ -20,15 +20,10 @@ class Response extends Message
      */
     public function __construct($response = null)
     {
-        if (is_string($response)) {
-            $this->body = $response;
-        }
         if (is_int($response)) {
             $this->status = new Status($response);
-        }
-        if (is_array($response) || is_object($response)) {
-            $this->body = json_encode($response);
-            $this->headers['content-type'] = new Header('Content-Type', 'application/json');
+        } else {
+            $this->setBody($response);
         }
     }
 

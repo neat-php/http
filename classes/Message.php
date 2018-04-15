@@ -98,6 +98,21 @@ class Message
     }
 
     /**
+     * Set body
+     *
+     * @param string $body
+     */
+    public function setBody($body = null)
+    {
+        if (is_null($body) || is_string($body)) {
+            $this->body = $body;
+        } elseif (is_array($body) || is_object($body)) {
+            $this->body = json_encode($body);
+            $this->setHeader('Content-Type', 'application/json');
+        }
+    }
+
+    /**
      * Get instance with body
      *
      * @param string $body
@@ -106,9 +121,20 @@ class Message
     public function withBody($body = null)
     {
         $new = clone $this;
-        $new->body = $body;
+        $new->setBody($body);
 
         return $new;
+    }
+
+    /**
+     * Set header
+     *
+     * @param string $name
+     * @param string $value
+     */
+    protected function setHeader($name, $value)
+    {
+        $this->headers[strtolower($name)] = new Header($name, $value);
     }
 
     /**
@@ -121,7 +147,7 @@ class Message
     public function withHeader($name, $value)
     {
         $new = clone $this;
-        $new->headers[strtolower($name)] = new Header($name, $value);
+        $new->setHeader($name, $value);
 
         return $new;
     }
