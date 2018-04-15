@@ -54,4 +54,16 @@ class ResponseTest extends TestCase
         $this->assertSame(404, $response->status()->code());
         $this->assertSame("HTTP/1.1 404 Not Found\r\n\r\n", (string) $response);
     }
+
+    /**
+     * Test redirect response
+     */
+    public function testRedirect()
+    {
+        $response = Response::redirect('/go-here-instead');
+
+        $this->assertNull($response->body());
+        $this->assertSame(302, $response->status()->code());
+        $this->assertSame("HTTP/1.1 302 Found\r\nLocation: /go-here-instead\r\n\r\n", (string) $response);
+    }
 }

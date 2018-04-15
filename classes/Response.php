@@ -60,4 +60,19 @@ class Response extends Message
 
         return new Status($this->body === null ? 204 : 200);
     }
+
+    /**
+     * Create redirect response
+     *
+     * @param string $location
+     * @param bool   $permanent
+     * @return static
+     */
+    public static function redirect($location, $permanent = false)
+    {
+        $redirect = new static($permanent ? 301 : 302);
+        $redirect->setHeader('Location', $location);
+
+        return $redirect;
+    }
 }
