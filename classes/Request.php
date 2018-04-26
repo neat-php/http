@@ -21,6 +21,13 @@ class Request extends Message
     protected $url;
 
     /**
+     * Query (aka GET) parameters
+     *
+     * @var array
+     */
+    protected $query = [];
+
+    /**
      * Request constructor.
      *
      * @param string     $method
@@ -80,6 +87,21 @@ class Request extends Message
     }
 
     /**
+     * Get query (aka GET) parameter(s)
+     *
+     * @param string $var
+     * @return mixed
+     */
+    public function query($var = null)
+    {
+        if ($var === null) {
+            return $this->query;
+        }
+
+        return $this->query[$var] ?? null;
+    }
+
+    /**
      * Set method
      *
      * @param string $method
@@ -97,6 +119,8 @@ class Request extends Message
     protected function setUrl($url)
     {
         $this->url = $url instanceof Url ? $url : new Url($url);
+
+        parse_str($this->url->query(), $this->query);
     }
 
     /**
@@ -123,6 +147,20 @@ class Request extends Message
     {
         $new = clone $this;
         $new->setUrl($url);
+
+        return $new;
+    }
+
+    /**
+     * Get new request with query parameters
+     *
+     * @param array $query
+     * @return Request
+     */
+    public function withQuery(array $query)
+    {
+        $new = clone $this;
+        $new->setUrl($this->url->withQuery(http_build_query($query)));
 
         return $new;
     }

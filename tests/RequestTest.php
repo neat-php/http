@@ -66,4 +66,27 @@ class RequestTest extends TestCase
 
         $this->assertSame($url, $request->withUrl($url)->url());
     }
+
+    /**
+     * Test query
+     */
+    public function testQuery()
+    {
+        $empty = new Request('GET', '/');
+
+        $this->assertNull($empty->query('id'));
+        $this->assertSame([], $empty->query());
+
+        $request = new Request('GET', '?id=1');
+
+        $this->assertSame('1', $request->query('id'));
+        $this->assertSame(['id' => '1'], $request->query());
+
+        $modified = $request->withQuery(['page' => 1]);
+
+        $this->assertNull($modified->query('id'));
+        $this->assertSame('1', $modified->query('page'));
+        $this->assertSame(['page' => '1'], $modified->query());
+        $this->assertSame('page=1', $modified->url()->query());
+    }
 }
