@@ -20,8 +20,8 @@ class Response extends Message
      */
     public function __construct($response = null)
     {
-        if (is_int($response)) {
-            $this->status = new Status($response);
+        if (is_int($response) || $response instanceof Status) {
+            $this->setStatus($response);
         } else {
             $this->setBody($response);
         }
@@ -59,6 +59,34 @@ class Response extends Message
         }
 
         return new Status($this->body === null ? 204 : 200);
+    }
+
+    /**
+     * Status
+     *
+     * @param int|Status $status
+     */
+    protected function setStatus($status)
+    {
+        if (!$status instanceof Status) {
+            $status = new Status($status);
+        }
+
+        $this->status = $status;
+    }
+
+    /**
+     * Get response with status
+     *
+     * @param int|Status $status
+     * @return Response
+     */
+    public function withStatus($status)
+    {
+        $new = clone $this;
+        $new->setStatus($status);
+
+        return $new;
     }
 
     /**

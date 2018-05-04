@@ -2,6 +2,7 @@
 namespace Neat\Http\Test;
 
 use Neat\Http\Response;
+use Neat\Http\Status;
 use PHPUnit\Framework\TestCase;
 
 class ResponseTest extends TestCase
@@ -44,15 +45,38 @@ class ResponseTest extends TestCase
     }
 
     /**
+     * Test status code response
+     */
+    public function testStatusCode()
+    {
+        $response = new Response(404);
+        $mutated  = $response->withStatus(500);
+
+        $this->assertNotSame($response, $mutated);
+        $this->assertNull($response->body());
+        $this->assertSame(404, $response->status()->code());
+        $this->assertSame("HTTP/1.1 404 Not Found\r\n\r\n", (string) $response);
+
+        $this->assertSame(500, $mutated->status()->code());
+        $this->assertSame("HTTP/1.1 500 Internal Server Error\r\n\r\n", (string) $mutated);
+    }
+
+    /**
      * Test status response
      */
     public function testStatus()
     {
-        $response = new Response(404);
+        $response = new Response($before = new Status(404, 'Are you lost?'));
+        $mutated  = $response->withStatus($after = new Status(403, 'You shall not pass!'));
 
         $this->assertNull($response->body());
+        $this->assertSame($before, $response->status());
         $this->assertSame(404, $response->status()->code());
-        $this->assertSame("HTTP/1.1 404 Not Found\r\n\r\n", (string) $response);
+        $this->assertSame("HTTP/1.1 404 Are you lost?\r\n\r\n", (string) $response);
+
+        $this->assertSame($after, $mutated->status());
+        $this->assertSame(403, $mutated->status()->code());
+        $this->assertSame("HTTP/1.1 403 You shall not pass!\r\n\r\n", (string) $mutated);
     }
 
     /**
