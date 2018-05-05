@@ -28,6 +28,13 @@ class Request extends Message
     protected $query = [];
 
     /**
+     * Parsed body (aka POST) parameters
+     *
+     * @var array
+     */
+    protected $post = [];
+
+    /**
      * Request constructor.
      *
      * @param string     $method
@@ -102,6 +109,21 @@ class Request extends Message
     }
 
     /**
+     * Get parsed body (aka POST) parameter(s)
+     *
+     * @param string $var
+     * @return mixed
+     */
+    public function post($var = null)
+    {
+        if ($var === null) {
+            return $this->post;
+        }
+
+        return $this->post[$var] ?? null;
+    }
+
+    /**
      * Set method
      *
      * @param string $method
@@ -121,6 +143,22 @@ class Request extends Message
         $this->url = $url instanceof Url ? $url : new Url($url);
 
         parse_str($this->url->query(), $this->query);
+    }
+
+    /**
+     * Set body
+     *
+     * @param string $body
+     */
+    protected function setBody($body = null)
+    {
+        parent::setBody($body);
+
+        if (is_array($body) || is_object($body)) {
+            $this->post = (array) $body;
+        } else {
+            $this->post = [];
+        }
     }
 
     /**

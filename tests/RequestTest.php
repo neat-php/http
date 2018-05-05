@@ -40,6 +40,9 @@ class RequestTest extends TestCase
         $request = new Request('POST', 'https://localhost/resource?id=1', ['json' => true]);
 
         $this->assertSame('{"json":true}', (string) $request->body());
+        $this->assertSame(['json' => true], $request->post());
+        $this->assertSame(true, $request->post('json'));
+        $this->assertNull($request->post('unknown'));
         $this->assertSame('application/json', $request->header('Content-Type'));
         $this->assertSame('https://localhost/resource?id=1', (string) $request->url());
         $this->assertsame('POST', $request->method());
