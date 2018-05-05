@@ -102,7 +102,7 @@ class Message
      *
      * @param string $body
      */
-    public function setBody($body = null)
+    protected function setBody($body = null)
     {
         if (is_null($body) || is_string($body)) {
             $this->body = $body;
