@@ -35,6 +35,13 @@ class Request extends Message
     protected $post = [];
 
     /**
+     * Cookie parameters
+     *
+     * @var array
+     */
+    protected $cookie = [];
+
+    /**
      * Request constructor.
      *
      * @param string     $method
@@ -124,6 +131,21 @@ class Request extends Message
     }
 
     /**
+     * Get cookie parameter(s)
+     *
+     * @param string $name
+     * @return mixed
+     */
+    public function cookie($name = null)
+    {
+        if ($name === null) {
+            return $this->cookie;
+        }
+
+        return $this->cookie[$name] ?? null;
+    }
+
+    /**
      * Set method
      *
      * @param string $method
@@ -158,6 +180,21 @@ class Request extends Message
             $this->post = (array) $body;
         } else {
             $this->post = [];
+        }
+    }
+
+    /**
+     * Set cookie parameters
+     *
+     * @param string $name
+     * @param string $value
+     */
+    protected function setCookie($name, $value = null)
+    {
+        if ($value !== null) {
+            $this->cookie[$name] = $value;
+        } elseif (isset($this->cookie[$name])) {
+            unset($this->cookie[$name]);
         }
     }
 
@@ -199,6 +236,21 @@ class Request extends Message
     {
         $new = clone $this;
         $new->setUrl($this->url->withQuery(http_build_query($query)));
+
+        return $new;
+    }
+
+    /**
+     * Get new request with cookie parameter
+     *
+     * @param string $name
+     * @param string $value
+     * @return Request
+     */
+    public function withCookie($name, $value)
+    {
+        $new = clone $this;
+        $new->setCookie($name, $value);
 
         return $new;
     }

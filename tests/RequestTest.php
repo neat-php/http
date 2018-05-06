@@ -92,4 +92,16 @@ class RequestTest extends TestCase
         $this->assertSame(['page' => '1'], $modified->query());
         $this->assertSame('page=1', $modified->url()->query());
     }
+
+    public function testCookie()
+    {
+        $request = new Request;
+        $modified = $request->withCookie('type', 'chocolate chip');
+
+        $this->assertNotSame($request, $modified);
+        $this->assertNull($request->cookie('type'));
+        $this->assertSame([], $request->cookie());
+        $this->assertSame('chocolate chip', $modified->cookie('type'));
+        $this->assertSame(['type' => 'chocolate chip'], $modified->cookie());
+    }
 }
