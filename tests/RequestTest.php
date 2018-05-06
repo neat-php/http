@@ -1,4 +1,5 @@
 <?php
+
 namespace Neat\Http\Test;
 
 use Neat\Http\Request;
@@ -95,7 +96,7 @@ class RequestTest extends TestCase
 
     public function testCookie()
     {
-        $request = new Request;
+        $request  = new Request;
         $modified = $request->withCookie('type', 'chocolate chip');
 
         $this->assertNotSame($request, $modified);

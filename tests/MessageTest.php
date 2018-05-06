@@ -1,4 +1,5 @@
 <?php
+
 namespace Neat\Test\Http;
 
 use Neat\Http\Message;
