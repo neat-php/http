@@ -94,6 +94,9 @@ class RequestTest extends TestCase
         $this->assertSame('page=1', $modified->url()->query());
     }
 
+    /**
+     * Test cookie
+     */
     public function testCookie()
     {
         $request  = new Request;
