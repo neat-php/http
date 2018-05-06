@@ -14,7 +14,7 @@ class Status
      *
      * @var string[]
      */
-    protected static $reasons = [
+    const REASONS = [
         100 => 'Continue',
         101 => 'Switching Protocols',
         102 => 'Processing',
@@ -98,7 +98,7 @@ class Status
     public function __construct(int $code, string $reason = null)
     {
         $this->code   = $code;
-        $this->reason = $reason ?? self::$reasons[$code] ?? '';
+        $this->reason = $reason ?? self::REASONS[$code] ?? '';
     }
 
     /**
