@@ -255,7 +255,7 @@ class Url
      */
     public function withScheme($scheme)
     {
-        $new         = clone $this;
+        $new = clone $this;
         $new->scheme = strtolower(rtrim($scheme, ':'));
 
         return $new;
@@ -270,7 +270,7 @@ class Url
      */
     public function withUserInfo($username, $password = '')
     {
-        $new           = clone $this;
+        $new = clone $this;
         $new->username = $username;
         $new->password = $password;
 
@@ -285,7 +285,7 @@ class Url
      */
     public function withHost($host)
     {
-        $new       = clone $this;
+        $new = clone $this;
         $new->host = strtolower($host);
 
         return $new;
@@ -304,7 +304,7 @@ class Url
             throw new \InvalidArgumentException('Invalid port number: ' . $port);
         }
 
-        $new       = clone $this;
+        $new = clone $this;
         $new->port = $port;
 
         return $new;
@@ -318,7 +318,7 @@ class Url
      */
     public function withPath($path)
     {
-        $new       = clone $this;
+        $new = clone $this;
         $new->path = $path;
 
         return $new;
@@ -332,7 +332,7 @@ class Url
      */
     public function withQuery($query)
     {
-        $new        = clone $this;
+        $new = clone $this;
         $new->query = $query;
 
         return $new;
@@ -346,7 +346,7 @@ class Url
      */
     public function withFragment($fragment)
     {
-        $new           = clone $this;
+        $new = clone $this;
         $new->fragment = $fragment;
 
         return $new;
