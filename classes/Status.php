@@ -98,7 +98,7 @@ class Status
     public function __construct(int $code, string $reason = null)
     {
         $this->code   = $code;
-        $this->reason = $reason ?? self::REASONS[$code] ?? '';
+        $this->reason = $reason ?? self::REASONS[$code] ?? 'Unknown';
     }
 
     /**

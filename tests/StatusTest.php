@@ -87,6 +87,18 @@ EOT;
     }
 
     /**
+     * Test custom status with unknown reason
+     */
+    public function testCustomStatusWithUnknownReason()
+    {
+        $status = new Status(599);
+
+        $this->assertSame(599, $status->code());
+        $this->assertSame('Unknown', $status->reason());
+        $this->assertSame('599 Unknown', (string) $status);
+    }
+
+    /**
      * Test default reasons
      *
      * @param int    $code
