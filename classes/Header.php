@@ -72,4 +72,21 @@ class Header
     {
         return $this->value;
     }
+
+    /**
+     * Capture headers
+     *
+     * @param array $headers Headers
+     * @return Header[]
+     */
+    public static function capture(array $headers = null)
+    {
+        $headers  = $headers ?? apache_request_headers();
+        $captured = [];
+        foreach ($headers as $name => $value) {
+            $captured[strtolower($name)] = new Header($name, $value);
+        }
+
+        return $captured;
+    }
 }
