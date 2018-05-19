@@ -15,7 +15,7 @@ class Message
     /**
      * Body
      *
-     * @var string
+     * @var string|null
      */
     protected $body;
 
@@ -101,13 +101,13 @@ class Message
     /**
      * Set body
      *
-     * @param string $body
+     * @param mixed $body
      */
     protected function setBody($body = null)
     {
-        if (is_null($body) || is_string($body)) {
+        if (is_string($body) || is_null($body)) {
             $this->body = $body;
-        } elseif (is_array($body) || is_object($body)) {
+        } else {
             $this->body = json_encode($body);
             $this->setHeader('Content-Type', 'application/json');
         }
@@ -116,7 +116,7 @@ class Message
     /**
      * Get instance with body
      *
-     * @param string $body
+     * @param mixed $body
      * @return static
      */
     public function withBody($body = null)

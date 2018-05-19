@@ -94,4 +94,39 @@ class MessageTest extends TestCase
         $this->assertSame('Hello world!', $mutated->body());
         $this->assertSame("\r\nHello world!", (string) $mutated);
     }
+
+    /**
+     * Provide JSON body data
+     *
+     * @return array
+     */
+    public function provideJsonBodyData()
+    {
+        return [
+            [['foo' => 'bar'], '{"foo":"bar"}'],
+            [(object) ['foo' => 'bar'], '{"foo":"bar"}'],
+            [true, 'true'],
+            [false, 'false'],
+            [0, '0'],
+            [1, '1'],
+            [3.14, '3.14'],
+        ];
+    }
+
+    /**
+     * Test message with JSON body
+     *
+     * @dataProvider provideJsonBodyData
+     * @param mixed  $data
+     * @param string $json
+     */
+    public function testJsonBody($data, $json)
+    {
+        $message = new Message;
+        $mutated = $message->withBody($data);
+
+        $this->assertNotSame($message, $mutated);
+        $this->assertSame($json, $mutated->body());
+        $this->assertSame('application/json', $mutated->header('Content-Type'));
+    }
 }
