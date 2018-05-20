@@ -255,4 +255,34 @@ class Request extends Message
 
         return $new;
     }
+
+    /**
+     * Capture request
+     *
+     * @param array $server
+     * @param array $post
+     * @param array $headers
+     * @param array $cookies
+     * @return Request
+     */
+    public static function capture(
+        array $server = null,
+        array $post = null,
+        array $headers = null,
+        array $cookies = null
+    )
+    {
+        $server  = $server ?? $_SERVER;
+        $post    = $post ?? $_POST;
+        $cookies = $cookies ?? $_COOKIE;
+
+        $method = $server['REQUEST_METHOD'] ?? 'GET';
+        $url    = Url::capture($server);
+
+        $request = new static($method, $url, $post);
+        $request->headers = Header::capture($headers);
+        $request->cookie  = $cookies;
+
+        return $request;
+    }
 }

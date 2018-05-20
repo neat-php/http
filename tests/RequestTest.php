@@ -108,4 +108,23 @@ class RequestTest extends TestCase
         $this->assertSame('chocolate chip', $modified->cookie('type'));
         $this->assertSame(['type' => 'chocolate chip'], $modified->cookie());
     }
+
+    /**
+     * Test capturing the request
+     */
+    public function testCapture()
+    {
+        $request = Request::capture(
+            ['HTTP_HOST' => 'example.com', 'REQUEST_METHOD' => 'POST', 'REQUEST_URI' => '/page/create'],
+            ['title' => 'about'],
+            ['User-Agent' => 'Test/1.0'],
+            ['type' => 'chocolate chip']
+        );
+
+        $this->assertSame('POST', $request->method());
+        $this->assertSame('http://example.com/page/create', (string) $request->url());
+        $this->assertSame(['title' => 'about'], $request->post());
+        $this->assertSame('Test/1.0', $request->header('User-Agent'));
+        $this->assertSame('chocolate chip', $request->cookie('type'));
+    }
 }
