@@ -91,6 +91,21 @@ class Response extends Message
     }
 
     /**
+     * Send response
+     */
+    public function send()
+    {
+        header($this->statusLine());
+        foreach ($this->headers as $header) {
+            header($header->line());
+        }
+
+        if (is_string($this->body)) {
+            echo $this->body;
+        }
+    }
+
+    /**
      * Create redirect response
      *
      * @param string $location

@@ -91,4 +91,22 @@ class ResponseTest extends TestCase
         $this->assertSame(302, $response->status()->code());
         $this->assertSame("HTTP/1.1 302 Found\r\nLocation: /go-here-instead\r\n\r\n", (string) $response);
     }
+
+    /**
+     * Test sending the response
+     */
+    public function testSend()
+    {
+        HeaderCollector::start();
+        ob_start();
+
+        $response = new Response(['error' => 'Something went wrong']);
+        $response->withStatus(500)->send();
+
+        $this->assertSame('{"error":"Something went wrong"}', ob_get_clean());
+        $this->assertSame([
+            'HTTP/1.1 500 Internal Server Error',
+            'Content-Type: application/json'
+        ], HeaderCollector::all());
+    }
 }
