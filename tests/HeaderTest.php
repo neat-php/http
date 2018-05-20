@@ -1,6 +1,6 @@
 <?php
 
-namespace Neat\Test\Http;
+namespace Neat\Http\Test;
 
 use Neat\Http\Header;
 use PHPUnit\Framework\TestCase;
