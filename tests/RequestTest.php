@@ -3,6 +3,7 @@
 namespace Neat\Http\Test;
 
 use Neat\Http\Request;
+use Neat\Http\Upload;
 use Neat\Http\Url;
 use PHPUnit\Framework\TestCase;
 
@@ -18,6 +19,10 @@ class RequestTest extends TestCase
         $this->assertNull($request->body());
         $this->assertSame('', (string) $request->url());
         $this->assertsame('GET', $request->method());
+        $this->assertSame([], $request->query());
+        $this->assertSame([], $request->post());
+        $this->assertSame([], $request->files());
+        $this->assertSame([], $request->cookie());
     }
 
     /**
@@ -48,6 +53,25 @@ class RequestTest extends TestCase
         $this->assertSame('https://localhost/resource?id=1', (string) $request->url());
         $this->assertsame('POST', $request->method());
         $this->assertsame("POST /resource?id=1 HTTP/1.1\r\nContent-Type: application/json\r\n\r\n{\"json\":true}", (string) $request);
+    }
+
+    /**
+     * Test with files
+     */
+    public function testWithFiles()
+    {
+        $request = new Request('POST');
+        $mutated = $request->withFiles(['avatar' => [
+                'tmp_name' => __DIR__ . '/test.txt',
+                'name'     => 'my-avatar.png',
+                'size'     => 90996,
+                'type'     => 'image/png',
+                'error'    => 0,
+            ],
+        ]);
+
+        $this->assertInstanceOf(Upload::class, $mutated->files('avatar'));
+        $this->assertEquals(['avatar' => new Upload(__DIR__ . '/test.txt', 'my-avatar.png', 'image/png')], $mutated->files());
     }
 
     /**
@@ -117,6 +141,7 @@ class RequestTest extends TestCase
         $request = Request::capture(
             ['HTTP_HOST' => 'example.com', 'REQUEST_METHOD' => 'POST', 'REQUEST_URI' => '/page/create'],
             ['title' => 'about'],
+            [],
             ['User-Agent' => 'Test/1.0'],
             ['type' => 'chocolate chip']
         );
@@ -124,6 +149,7 @@ class RequestTest extends TestCase
         $this->assertSame('POST', $request->method());
         $this->assertSame('http://example.com/page/create', (string) $request->url());
         $this->assertSame(['title' => 'about'], $request->post());
+        $this->assertSame([], $request->files());
         $this->assertSame('Test/1.0', $request->header('User-Agent'));
         $this->assertSame('chocolate chip', $request->cookie('type'));
     }

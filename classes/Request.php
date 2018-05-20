@@ -36,6 +36,13 @@ class Request extends Message
     protected $post = [];
 
     /**
+     * Uploaded files
+     *
+     * @var Upload[]|Upload[][]|...
+     */
+    protected $files = [];
+
+    /**
      * Cookie parameters
      *
      * @var array
@@ -129,6 +136,22 @@ class Request extends Message
         }
 
         return $this->post[$var] ?? null;
+    }
+
+    /**
+     * Get parsed body (aka POST) parameter(s)
+     *
+     * @param array $key
+     * @return null|Upload|Upload[]|Upload[][]|...
+     */
+    public function files(...$key)
+    {
+        $files = $this->files;
+        while ($key) {
+            $files = $files[array_shift($key)] ?? null;
+        }
+
+        return $files;
     }
 
     /**
@@ -242,6 +265,20 @@ class Request extends Message
     }
 
     /**
+     * Get new request with uploaded files
+     *
+     * @param array $files
+     * @return Request
+     */
+    public function withFiles(array $files)
+    {
+        $new = clone $this;
+        $new->files = Upload::capture($files);
+
+        return $new;
+    }
+
+    /**
      * Get new request with cookie parameter
      *
      * @param string $name
@@ -261,6 +298,7 @@ class Request extends Message
      *
      * @param array $server
      * @param array $post
+     * @param array $files
      * @param array $headers
      * @param array $cookies
      * @return Request
@@ -268,10 +306,10 @@ class Request extends Message
     public static function capture(
         array $server = null,
         array $post = null,
+        array $files = null,
         array $headers = null,
         array $cookies = null
-    )
-    {
+    ) {
         $server  = $server ?? $_SERVER;
         $post    = $post ?? $_POST;
         $cookies = $cookies ?? $_COOKIE;
@@ -280,6 +318,7 @@ class Request extends Message
         $url    = Url::capture($server);
 
         $request = new static($method, $url, $post);
+        $request->files   = Upload::capture($files);
         $request->headers = Header::capture($headers);
         $request->cookie  = $cookies;
 
