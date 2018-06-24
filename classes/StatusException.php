@@ -8,8 +8,6 @@ use Throwable;
 class StatusException extends RuntimeException
 {
     /**
-     * Status
-     *
      * @var Status
      */
     protected $status;

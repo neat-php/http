@@ -10,57 +10,41 @@ namespace Neat\Http;
 class Url
 {
     /**
-     * Scheme
-     *
      * @var string
      */
     protected $scheme = '';
 
     /**
-     * Username
-     *
      * @var string
      */
     protected $username = '';
 
     /**
-     * Password
-     *
      * @var string
      */
     protected $password = '';
 
     /**
-     * Host
-     *
      * @var string
      */
     protected $host = '';
 
     /**
-     * Port number
-     *
      * @var int
      */
     protected $port;
 
     /**
-     * Path
-     *
      * @var string
      */
     protected $path = '';
 
     /**
-     * Query
-     *
      * @var string
      */
     protected $query = '';
 
     /**
-     * Fragment
-     *
      * @var string
      */
     protected $fragment = '';

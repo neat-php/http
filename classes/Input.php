@@ -5,42 +5,32 @@ namespace Neat\Http;
 class Input
 {
     /**
-     * Request
-     *
      * @var Request
      */
     protected $request;
 
     /**
-     * Data
-     *
      * @var array
      */
     protected $data;
 
     /**
-     * Sources
-     *
      * @var array
      */
     protected $sources = ['query', 'post', 'files', 'cookie'];
 
     /**
-     * Filters
-     *
      * @var array
      */
     protected $filters = [];
 
     /**
-     * Errors
-     *
      * @var array
      */
     protected $errors = [];
 
     /**
-     * Constructor
+     * Input constructor
      *
      * @param Request $request
      */

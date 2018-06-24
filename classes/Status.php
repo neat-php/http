@@ -10,8 +10,6 @@ namespace Neat\Http;
 class Status
 {
     /**
-     * Default reasons
-     *
      * @var string[]
      */
     const REASONS = [
@@ -76,15 +74,11 @@ class Status
     ];
 
     /**
-     * Code
-     *
      * @var int
      */
     protected $code;
 
     /**
-     * Reason
-     *
      * @var string
      */
     protected $reason;

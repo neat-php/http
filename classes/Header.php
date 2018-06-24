@@ -8,15 +8,11 @@ namespace Neat\Http;
 class Header
 {
     /**
-     * Header field name
-     *
      * @var string
      */
     public $name;
 
     /**
-     * Header field value
-     *
      * @var string
      */
     public $value;

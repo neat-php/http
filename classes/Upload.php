@@ -7,56 +7,42 @@ use RuntimeException;
 class Upload
 {
     /**
-     * File path
-     *
      * @var string
      */
     protected $path;
 
     /**
-     * Client filename
-     *
      * @var string
      */
     protected $name;
 
     /**
-     * Size in bytes
-     *
      * @var int
      */
     protected $size;
 
     /**
-     * Client type
-     *
      * @var string
      */
     protected $type;
 
     /**
-     * Error
-     *
      * @var int
      */
     protected $error;
 
     /**
-     * Move function
-     *
      * @var callable
      */
     protected $move;
 
     /**
-     * Moved?
-     *
      * @var bool
      */
     protected $moved = false;
 
     /**
-     * File constructor.
+     * File constructor
      *
      * @param string   $path
      * @param string   $name

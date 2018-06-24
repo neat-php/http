@@ -8,8 +8,6 @@ namespace Neat\Http;
 class Response extends Message
 {
     /**
-     * Status
-     *
      * @var Status
      */
     protected $status;

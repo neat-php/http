@@ -8,49 +8,37 @@ namespace Neat\Http;
 class Request extends Message
 {
     /**
-     * Method in uppercase
-     *
      * @var string
      */
     protected $method;
 
     /**
-     * URL
-     *
      * @var Url
      */
     protected $url;
 
     /**
-     * Query (aka GET) parameters
-     *
      * @var array
      */
     protected $query = [];
 
     /**
-     * Parsed body (aka POST) parameters
-     *
      * @var array
      */
     protected $post = [];
 
     /**
-     * Uploaded files
-     *
      * @var Upload[]|Upload[][]|...
      */
     protected $files = [];
 
     /**
-     * Cookie parameters
-     *
      * @var array
      */
     protected $cookie = [];
 
     /**
-     * Request constructor.
+     * Request constructor
      *
      * @param string     $method
      * @param string|Url $url

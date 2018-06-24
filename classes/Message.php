@@ -13,8 +13,6 @@ class Message
     const EOL = "\r\n";
 
     /**
-     * Body
-     *
      * @var string|null
      */
     protected $body;
@@ -27,8 +25,6 @@ class Message
     protected $headers = [];
 
     /**
-     * HTTP version
-     *
      * @var string
      */
     protected $version = '1.1';
