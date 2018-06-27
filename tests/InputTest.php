@@ -14,8 +14,7 @@ class InputTest extends TestCase
      */
     public function testEmpty()
     {
-        $request = new Request();
-        $input   = new Input($request);
+        $input = new Input(new Request, new SessionMock);
 
         $this->assertSame([], $input->all());
         $this->assertFalse($input->has('unknown'));
@@ -41,21 +40,34 @@ class InputTest extends TestCase
             'error'    => 0,
         ],]);
 
-        $input   = new Input($request);
+        $input   = new Input($request, new SessionMock);
 
-        $input->from('query');
+        $input->load('query');
         $this->assertSame(['var' => 'query'], $input->all());
 
-        $input->from('post');
+        $input->load('post');
         $this->assertSame(['var' => 'post'], $input->all());
 
-        $input->from('cookie');
+        $input->load('cookie');
         $this->assertSame(['var' => 'cookie'], $input->all());
 
-        $input->from('files');
+        $input->load('files');
         $this->assertEquals([
             'var' => new Upload(__DIR__ . '/test.txt', 'file.txt', 'plain/text')
         ], $input->all());
+    }
+
+    /**
+     * Test set value
+     */
+    public function testSet()
+    {
+        $input = new Input(new Request, new SessionMock);
+        $input->set('var', 'value');
+
+        $this->assertSame(['var' => 'value'], $input->all());
+        $this->assertTrue($input->has('var'));
+        $this->assertSame('value', $input->get('var'));
     }
 
     /**
@@ -64,11 +76,11 @@ class InputTest extends TestCase
     public function testFromEmpty()
     {
         $request = new Request();
-        $input   = new Input($request);
+        $input   = new Input($request, new SessionMock);
 
         $this->expectExceptionObject(new \RuntimeException('Sources must not be empty'));
 
-        $input->from();
+        $input->load();
     }
 
     /**
@@ -77,11 +89,11 @@ class InputTest extends TestCase
     public function testFromUnknown()
     {
         $request = new Request();
-        $input   = new Input($request);
+        $input   = new Input($request, new SessionMock);
 
         $this->expectExceptionObject(new \RuntimeException('Unknown source: internet'));
 
-        $input->from('query', 'internet');
+        $input->load('query', 'internet');
     }
 
     /**
@@ -90,7 +102,7 @@ class InputTest extends TestCase
     public function testFilter()
     {
         $request = new Request('GET', '/?var=%20test%20');
-        $input   = new Input($request);
+        $input   = new Input($request, new SessionMock);
 
         $this->assertSame(' test ', $input->get('var'));
         $this->assertSame('test', $input->filter('var', 'trim'));
@@ -137,7 +149,7 @@ class InputTest extends TestCase
         };
 
         $request = new Request('POST', '/', ['var' => $value]);
-        $input   = new Input($request);
+        $input   = new Input($request, new SessionMock);
         $input->register('even', $even);
 
         $this->assertSame($filtered, $input->filter('var', 'even'));
@@ -191,7 +203,7 @@ class InputTest extends TestCase
     public function testTypeCast($type, $value, $filtered)
     {
         $request = new Request('POST', '/', ['var' => $value]);
-        $input   = new Input($request);
+        $input   = new Input($request, new SessionMock);
 
         $this->assertSame($filtered, $input->$type('var'));
     }
@@ -210,7 +222,7 @@ class InputTest extends TestCase
             'error'    => 0,
         ],]);
 
-        $input = new Input($request);
+        $input = new Input($request, new SessionMock);
 
         $this->assertNull($input->file('bool'));
         $this->assertEquals(

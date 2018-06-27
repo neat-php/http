@@ -10,14 +10,14 @@ class Input
     protected $request;
 
     /**
-     * @var array
+     * @var Session
      */
-    protected $data;
+    protected $session;
 
     /**
      * @var array
      */
-    protected $sources = ['query', 'post', 'files', 'cookie'];
+    protected $data;
 
     /**
      * @var array
@@ -33,44 +33,81 @@ class Input
      * Input constructor
      *
      * @param Request $request
+     * @param Session $session
      */
-    public function __construct(Request $request)
+    public function __construct(Request $request, Session $session)
     {
         $this->request = $request;
-        $this->load();
+        $this->session = $session;
+
+        $this->init();
     }
 
     /**
-     * Select sources (query, post, file, cookie)
+     * Initialize the input
+     */
+    public function init()
+    {
+        $this->load('query', 'post', 'files', 'cookie');
+    }
+
+    /**
+     * Clear the input
+     */
+    public function clear()
+    {
+        $this->data   = [];
+        $this->errors = [];
+    }
+
+    /**
+     * Load input from the requested sources and the session
      *
-     * This reloads the input and flushes all previously applied filters and validations
+     * Flushes all previously applied filters and validations
      *
      * @param array $sources
      */
-    public function from(...$sources)
+    public function load(...$sources)
     {
-        if ($unknown = array_diff($sources, ['query', 'post', 'files', 'cookie'])) {
-            throw new \RuntimeException('Unknown source: ' . implode(', ', $unknown));
-        }
-        if (empty($sources)) {
+        if (!$sources) {
             throw new \RuntimeException('Sources must not be empty');
         }
 
-        $this->sources = $sources;
-        $this->load();
+        $this->clear();
+        foreach ($sources as $source) {
+            switch ($source) {
+                case 'query':
+                case 'post':
+                case 'files':
+                case 'cookie':
+                    $this->data = array_merge($this->data, $this->request->$source());
+                    break;
+                default:
+                    throw new \RuntimeException('Unknown source: ' . $source);
+            }
+        }
+
+        if ($session = $this->session->get('input')) {
+            $this->session->unset('input');
+            if (!$this->data) {
+                $this->data = $session;
+            }
+        }
     }
 
     /**
-     * Load input from the request or session
+     * Retry the input at the referring URL
+     *
+     * Retains the input data using the session and returns a redirect response
+     * so the user can safely resume entering the input at the referring URL.
+     *
+     * @return Response
      */
-    public function load()
+    public function retry()
     {
-        $get = function ($source) {
-            return $this->request->$source();
-        };
+        $this->session->set('input', $this->data);
 
-        $this->data   = array_merge(...array_map($get, $this->sources));
-        $this->errors = [];
+        return Response::redirect($this->request->header('referer'));
     }
 
     /**
@@ -101,6 +138,17 @@ class Input
     public function get($var)
     {
         return $this->data[$var] ?? null;
+    }
+
+    /**
+     * Set variable
+     *
+     * @param string $var
+     * @param mixed  $value
+     */
+    public function set($var, $value)
+    {
+        $this->data[$var] = $value;
     }
 
     /**
