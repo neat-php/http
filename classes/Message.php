@@ -103,6 +103,8 @@ class Message
     {
         if (is_string($body) || is_null($body)) {
             $this->body = $body;
+        } elseif (is_object($body) && method_exists($body, '__toString')) {
+            $this->body = (string) $body;
         } else {
             $this->body = json_encode($body);
             $this->setHeader('Content-Type', 'application/json');
