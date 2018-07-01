@@ -90,7 +90,8 @@ class Input
         if ($session = $this->session->get('input')) {
             $this->session->unset('input');
             if (!$this->data) {
-                $this->data = $session;
+                $this->data   = $session['data'] ?? [];
+                $this->errors = $session['errors'] ?? [];
             }
         }
     }
@@ -105,7 +106,10 @@ class Input
      */
     public function retry()
     {
-        $this->session->set('input', $this->data);
+        $this->session->set('input', [
+            'data'   => $this->data,
+            'errors' => $this->errors,
+        ]);
 
         return Response::redirect($this->request->header('referer'));
     }
