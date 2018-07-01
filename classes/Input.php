@@ -115,6 +115,19 @@ class Input
     }
 
     /**
+     * Set variable default
+     *
+     * @param string $var
+     * @param mixed  $value
+     */
+    public function default($var, $value)
+    {
+        if (!isset($this->data[$var])) {
+            $this->data[$var] = $value;
+        }
+    }
+
+    /**
      * Get all variables
      */
     public function all()
