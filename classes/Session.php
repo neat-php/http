@@ -10,7 +10,17 @@ class Session
     /**
      * @var array
      */
-    protected $session = [];
+    protected $session;
+
+    /**
+     * Session constructor
+     */
+    public function __construct()
+    {
+        if ($this->active()) {
+            $this->session =& $_SESSION;
+        }
+    }
 
     /**
      * Session active?
@@ -29,7 +39,9 @@ class Session
     {
         if (!$this->active()) {
             session_start();
-            $this->session = &$_SESSION;
+            $this->session =& $_SESSION;
+        } elseif (!isset($this->session)) {
+            $this->session =& $_SESSION;
         }
     }
 
