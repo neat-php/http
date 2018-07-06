@@ -96,6 +96,39 @@ class MessageTest extends TestCase
     }
 
     /**
+     * Test message with body
+     */
+    public function testObjectBody()
+    {
+        $body = new class {
+            /**
+             * @var int
+             */
+            public $conversions = 0;
+
+            /**
+             * Convert to string
+             *
+             * @return string
+             */
+            public function __toString()
+            {
+                $this->conversions++;
+
+                return 'Hello world!';
+            }
+        };
+        $message = new Message;
+        $mutated = $message->withBody($body);
+
+        $this->assertNotSame($message, $mutated);
+        $this->assertSame(1, $body->conversions);
+        $this->assertSame('Hello world!', $mutated->body());
+        $this->assertSame("\r\nHello world!", (string) $mutated);
+        $this->assertSame(1, $body->conversions);
+    }
+
+    /**
      * Provide JSON body data
      *
      * @return array
