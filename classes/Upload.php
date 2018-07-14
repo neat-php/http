@@ -52,17 +52,17 @@ class Upload
      */
     public function __construct($path, $name = null, $type = null, $error = UPLOAD_ERR_OK, $move = null)
     {
-        if ($path && file_exists($path)) {
-            $this->path = $path;
-            $this->size = filesize($path);
-        } else {
-            $error = UPLOAD_ERR_NO_FILE;
-        }
-
+        $this->path  = $path;
         $this->name  = $name;
         $this->type  = $type;
         $this->error = $error;
         $this->move  = $move ?? (PHP_SAPI === 'cli' ? 'rename' : 'move_uploaded_file');
+
+        if ($path && file_exists($path)) {
+            $this->size = filesize($path);
+        } else {
+            $this->error = UPLOAD_ERR_NO_FILE;
+        }
     }
 
     /**
@@ -94,6 +94,16 @@ class Upload
     public function moved()
     {
         return $this->moved;
+    }
+
+    /**
+     * Get path to file
+     *
+     * @return string
+     */
+    public function path()
+    {
+        return $this->path;
     }
 
     /**

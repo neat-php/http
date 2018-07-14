@@ -15,6 +15,7 @@ class UploadTest extends TestCase
     {
         $file = new Upload(__DIR__ . '/test.txt');
 
+        $this->assertSame(__DIR__ . '/test.txt', $file->path());
         $this->assertSame(12, $file->size());
         $this->assertNull($file->clientName());
         $this->assertNull($file->clientType());
@@ -42,6 +43,7 @@ class UploadTest extends TestCase
     {
         $file = new Upload(__DIR__ . '/invalid.txt');
 
+        $this->assertSame(__DIR__ . '/invalid.txt', $file->path());
         $this->assertNull($file->size());
         $this->assertSame(UPLOAD_ERR_NO_FILE, $file->error());
         $this->assertFalse($file->ok());
@@ -60,9 +62,11 @@ class UploadTest extends TestCase
             ->willReturn(true);
 
         $file = new Upload(__DIR__ . '/test.txt', 'test.txt', 'text/plain', UPLOAD_ERR_OK, $move);
-
+        $this->assertSame(__DIR__ . '/test.txt', $file->path());
         $this->assertFalse($file->moved());
+
         $file->moveTo(__DIR__ . '/destination.txt');
+        $this->assertSame(__DIR__ . '/destination.txt', $file->path());
         $this->assertTrue($file->moved());
     }
 
@@ -80,9 +84,14 @@ class UploadTest extends TestCase
 
         $file = new Upload(__DIR__ . '/test.txt', 'test.txt', 'text/plain', UPLOAD_ERR_OK, $move);
         $file->moveTo(__DIR__ . '/destination1.txt');
+        $this->assertSame(__DIR__ . '/destination1.txt', $file->path());
 
-        $this->expectExceptionObject(new RuntimeException('Uploaded file already moved'));
-        $file->moveTo(__DIR__ . '/destination2.txt');
+        try {
+            $this->expectExceptionObject(new RuntimeException('Uploaded file already moved'));
+            $file->moveTo(__DIR__ . '/destination2.txt');
+        } finally {
+            $this->assertSame(__DIR__ . '/destination1.txt', $file->path());
+        }
     }
 
     /**
@@ -99,8 +108,12 @@ class UploadTest extends TestCase
 
         $this->assertFalse($file->moved());
 
-        $this->expectExceptionObject(new RuntimeException('Cannot move invalid file upload'));
-        $file->moveTo(__DIR__ . '/destination.txt');
+        try {
+            $this->expectExceptionObject(new RuntimeException('Cannot move invalid file upload'));
+            $file->moveTo(__DIR__ . '/destination.txt');
+        } finally {
+            $this->assertSame(__DIR__ . '/invalid.txt', $file->path());
+        }
     }
 
     /**
@@ -118,8 +131,12 @@ class UploadTest extends TestCase
         $file = new Upload(__DIR__ . '/test.txt', 'test.txt', 'text/plain', UPLOAD_ERR_OK, $move);
         $this->assertTrue($file->ok());
 
-        $this->expectExceptionObject(new RuntimeException('Failed moving uploaded file'));
-        $file->moveTo(__DIR__ . '/destination.txt');
+        try {
+            $this->expectExceptionObject(new RuntimeException('Failed moving uploaded file'));
+            $file->moveTo(__DIR__ . '/destination.txt');
+        } finally {
+            $this->assertSame(__DIR__ . '/test.txt', $file->path());
+        }
     }
 
     /**
