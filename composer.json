@@ -1,7 +1,12 @@
 {
     "name": "neat/http",
     "description": "Neat HTTP components",
-    "keywords": ["http", "request", "response"],
+    "type": "library",
+    "keywords": [
+        "http",
+        "request",
+        "response"
+    ],
     "license": "MIT",
     "authors": [
         {
