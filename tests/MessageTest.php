@@ -2,8 +2,14 @@
 
 namespace Neat\Http\Test;
 
+use GuzzleHttp\Psr7\ServerRequest;
+use GuzzleHttp\Psr7\Uri;
+use Neat\Http\Header;
 use Neat\Http\Message;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\StreamInterface;
 
 class MessageTest extends TestCase
 {
@@ -12,17 +18,29 @@ class MessageTest extends TestCase
      */
     public function testDefaults()
     {
-        $message = new Message;
+        /** @var StreamInterface|MockObject $psrStream */
+        $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
+        /** @var MessageInterface|MockObject $psrMessage */
+        $psrMessage = $this->getMockForAbstractClass(MessageInterface::class);
+        $psrMessage->expects($this->at(0))->method('getProtocolVersion')->willReturn('1.1');
+        $psrMessage->expects($this->at(1))->method('getBody')->willReturn($psrStream);
+        $psrStream->expects($this->at(0))->method('getContents')->willReturn('');
+        $psrMessage->expects($this->at(2))->method('getHeaders')->willReturn([]);
+        $psrMessage->expects($this->at(3))->method('getHeader')->willReturn([]);
+        $psrMessage->expects($this->at(4))->method('getHeaders')->willReturn([]);
+        $psrMessage->expects($this->at(5))->method('getBody')->willReturn($psrStream);
+        $psrStream->expects($this->at(1))->method('getContents')->willReturn('');
+
+        $message = new MessageMock($psrMessage);
 
         $this->assertSame('1.1', $message->version());
-        $this->assertNull($message->body());
+        $this->assertSame('', $message->body());
 
         $this->assertSame([], $message->headers());
         $this->assertNull($message->header('X-Test'));
-        $this->assertSame('DEFAULT', $message->header('X-Test', 'DEFAULT'));
 
         $this->assertSame("\r\n", Message::EOL);
-        $this->assertSame("\r\n", (string) $message);
+        $this->assertSame("\r\n", (string)$message);
     }
 
     /**
@@ -30,7 +48,14 @@ class MessageTest extends TestCase
      */
     public function testVersionMutation()
     {
-        $message = new Message;
+        /** @var MessageInterface|MockObject $psrMessage */
+        $psrMessage  = $this->getMockForAbstractClass(MessageInterface::class);
+        $psrMessage2 = clone $psrMessage;
+        $psrMessage->expects($this->at(0))->method('withProtocolVersion')->with($this->equalTo('1.0'))->willReturn($psrMessage2);
+        $psrMessage->expects($this->at(1))->method('getProtocolVersion')->willReturn('1.1');
+        $psrMessage2->expects($this->at(0))->method('getProtocolVersion')->willReturn('1.0');
+
+        $message = new MessageMock($psrMessage);
         $mutated = $message->withVersion('1.0');
 
         $this->assertNotSame($message, $mutated);
@@ -43,43 +68,30 @@ class MessageTest extends TestCase
      */
     public function testAddedHeader()
     {
-        $message = new Message;
+        /** @var StreamInterface|MockObject $psrStream */
+        $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
+        /** @var MessageInterface|MockObject $psrMessage */
+        $psrMessage  = $this->getMockForAbstractClass(MessageInterface::class);
+        $psrMessage2 = clone $psrMessage;
+        $psrMessage->expects($this->at(0))->method('withHeader')
+            ->with($this->equalTo('Host'), $this->equalTo('example.com'))->willReturn($psrMessage2);
+        $psrMessage->expects($this->at(1))->method('getHeader')->with($this->equalTo('Host'))->willReturn(['example.net']);
+        $psrMessage2->expects($this->at(0))->method('getHeader')->with($this->equalTo('Host'))->willReturn(['example.com']);
+        $psrMessage2->expects($this->at(1))->method('getHeader')->with($this->equalTo('host'))->willReturn(['example.com']);
+        $psrMessage2->expects($this->at(2))->method('getHeaders')->willReturn(['Host' => ['example.com']]);
+        $psrMessage2->expects($this->at(3))->method('getHeaders')->willReturn(['Host' => ['example.com']]);
+        $psrMessage2->expects($this->at(4))->method('getBody')->willReturn($psrStream);
+        $psrStream->expects($this->at(0))->method('getContents')->willReturn('');
+
+        $message = new MessageMock($psrMessage);
         $mutated = $message->withHeader('Host', 'example.com');
 
         $this->assertNotSame($message, $mutated);
-        $this->assertSame('example.com', $mutated->header('Host'));
-        $this->assertSame('example.com', $mutated->header('host'));
-        $this->assertSame(['Host' => 'example.com'], $mutated->headers());
-        $this->assertSame("Host: example.com\r\n\r\n", (string) $mutated);
-    }
-
-    /**
-     * Test message with modified header
-     */
-    public function testModifiedHeader()
-    {
-        $message = (new Message)->withHeader('Host', 'example.com');
-        $mutated = $message->withHeader('host', 'example.net');
-
-        $this->assertSame('example.net', $mutated->header('Host'));
-        $this->assertSame('example.net', $mutated->header('host'));
-        $this->assertSame(['host' => 'example.net'], $mutated->headers());
-        $this->assertSame("host: example.net\r\n\r\n", (string) $mutated);
-    }
-
-    /**
-     * Test message with removed header
-     */
-    public function testRemovedHeader()
-    {
-        $message = (new Message)->withHeader('Host', 'example.com');
-        $mutated = $message->withoutHeader('host');
-
-        $this->assertNotSame($message, $mutated);
-        $this->assertNull($mutated->header('Host'));
-        $this->assertNull($mutated->header('host'));
-        $this->assertSame([], $mutated->headers());
-        $this->assertSame("\r\n", (string) $mutated);
+        $this->assertEquals(new Header('Host', 'example.net'), $message->header('Host'));
+        $this->assertEquals(new Header('Host', 'example.com'), $mutated->header('Host'));
+        $this->assertEquals(new Header('host', 'example.com'), $mutated->header('host'));
+        $this->assertEquals([new Header('Host', 'example.com')], $mutated->headers());
+        $this->assertSame("Host: example.com\r\n\r\n", (string)$mutated);
     }
 
     /**
@@ -87,79 +99,72 @@ class MessageTest extends TestCase
      */
     public function testBody()
     {
-        $message = new Message;
-        $mutated = $message->withBody('Hello world!');
+        /** @var StreamInterface|MockObject $psrStream */
+        $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
+        /** @var MessageInterface|MockObject $psrMessage */
+        $psrMessage  = $this->getMockForAbstractClass(MessageInterface::class);
+        $psrMessage2 = clone $psrMessage;
+        $psrMessage->expects($this->at(0))->method('withBody')->with($psrStream)->willReturn($psrMessage2);
+        $psrMessage2->expects($this->any())->method('getBody')->willReturn($psrStream);
+        $psrStream->expects($this->any())->method('getContents')->willReturn('Hello world!');
+        $psrMessage2->expects($this->once())->method('getHeaders')->willReturn([]);
+
+        $message = new MessageMock($psrMessage);
+        $mutated = $message->withBody($psrStream);
 
         $this->assertNotSame($message, $mutated);
         $this->assertSame('Hello world!', $mutated->body());
-        $this->assertSame("\r\nHello world!", (string) $mutated);
+        $this->assertSame("\r\nHello world!", (string)$mutated);
     }
 
-    /**
-     * Test message with body
-     */
-    public function testObjectBody()
+    public function testBodyStream()
     {
-        $body = new class {
-            /**
-             * @var int
-             */
-            public $conversions = 0;
+        $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost'), [], 'Hello world!'));
 
-            /**
-             * Convert to string
-             *
-             * @return string
-             */
-            public function __toString()
-            {
-                $this->conversions++;
-
-                return 'Hello world!';
-            }
-        };
-        $message = new Message;
-        $mutated = $message->withBody($body);
-
-        $this->assertNotSame($message, $mutated);
-        $this->assertSame(1, $body->conversions);
-        $this->assertSame('Hello world!', $mutated->body());
-        $this->assertSame("\r\nHello world!", (string) $mutated);
-        $this->assertSame(1, $body->conversions);
+        $this->assertInstanceOf(StreamInterface::class, $message->bodyStream());
+        $this->assertSame('Hello world!', (string)$message->body());
     }
 
-    /**
-     * Provide JSON body data
-     *
-     * @return array
-     */
-    public function provideJsonBodyData()
+    public function testAuthorization()
     {
-        return [
-            [['foo' => 'bar'], '{"foo":"bar"}'],
-            [(object) ['foo' => 'bar'], '{"foo":"bar"}'],
-            [true, 'true'],
-            [false, 'false'],
-            [0, '0'],
-            [1, '1'],
-            [3.14, '3.14'],
-        ];
+        $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost')));
+        $this->assertNull($message->authorization());
+
+        $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost'),
+            ['Authorization' => ['Basic abcdef']]));
+
+        $authorization = $message->authorization();
+        $this->assertInstanceOf(Header\Authorization::class, $authorization);
+        $this->assertTrue($authorization->isBasic());
+        $this->assertFalse($authorization->isBearer());
+        $this->assertSame('abcdef', $authorization->credentials());
+        $this->assertSame('Basic', $authorization->type());
+
+        $message       = $message->withAuthorization('Bearer', 'HelloWorld');
+        $authorization = $message->authorization();
+        $this->assertFalse($authorization->isBasic());
+        $this->assertTrue($authorization->isBearer());
+        $this->assertSame('Bearer', $authorization->type());
+        $this->assertSame('HelloWorld', $authorization->credentials());
     }
 
-    /**
-     * Test message with JSON body
-     *
-     * @dataProvider provideJsonBodyData
-     * @param mixed  $data
-     * @param string $json
-     */
-    public function testJsonBody($data, $json)
+    public function testContentType()
     {
-        $message = new Message;
-        $mutated = $message->withBody($data);
+        $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost')));
+        $this->assertNull($message->contentType());
 
-        $this->assertNotSame($message, $mutated);
-        $this->assertSame($json, $mutated->body());
-        $this->assertSame('application/json', $mutated->header('Content-Type'));
+        $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost'),
+            ['Content-Type' => ['application/json; charset=utf-8']]));
+
+        $contentType = $message->contentType();
+
+        $this->assertInstanceOf(Header\ContentType::class, $contentType);
+        $this->assertSame('application/json', $contentType->getValue());
+        $this->assertSame('utf-8', $contentType->getCharset());
+
+        $message     = $message->withContentType('plain/text', 'ascii');
+        $contentType = $message->contentType();
+        $this->assertSame('plain/text', $contentType->getValue());
+        $this->assertSame('ascii', $contentType->getCharset());
     }
 }

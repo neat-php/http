@@ -12,6 +12,10 @@
         {
             "name": "Guido van Biemen",
             "email": "guidovanbiemen@gmail.com"
+        },
+        {
+            "name": "Bauke van der Woude",
+            "email": "bvanderwoude@shopbox.nl"
         }
     ],
     "autoload": {
@@ -25,9 +29,12 @@
         }
     },
     "require": {
-        "php": ">=7.0"
+        "php": ">=7.0",
+        "ext-json": "*",
+        "psr/http-message": "^1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.0"
+        "phpunit/phpunit": "^6.5",
+        "guzzlehttp/psr7": "^1.6"
     }
 }

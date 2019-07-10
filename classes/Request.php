@@ -1,6 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Neat\Http;
+
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\UploadedFileInterface;
 
 /**
  * HTTP Request
@@ -8,47 +11,18 @@ namespace Neat\Http;
 class Request extends Message
 {
     /**
-     * @var string
+     * @var ServerRequestInterface
      */
-    protected $method;
-
-    /**
-     * @var Url
-     */
-    protected $url;
-
-    /**
-     * @var array
-     */
-    protected $query = [];
-
-    /**
-     * @var array
-     */
-    protected $post = [];
-
-    /**
-     * @var Upload[]|Upload[][]|...
-     */
-    protected $files = [];
-
-    /**
-     * @var array
-     */
-    protected $cookie = [];
+    protected $message;
 
     /**
      * Request constructor
      *
-     * @param string     $method
-     * @param string|Url $url
-     * @param string     $body
+     * @param ServerRequestInterface $request
      */
-    public function __construct($method = 'GET', $url = null, $body = null)
+    public function __construct(ServerRequestInterface $request)
     {
-        $this->setMethod($method);
-        $this->setUrl($url);
-        $this->setBody($body);
+        parent::__construct($request);
     }
 
     /**
@@ -56,9 +30,17 @@ class Request extends Message
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->requestLine() . self::EOL . parent::__toString();
+    }
+
+    /**
+     * @return ServerRequestInterface
+     */
+    public function psr(): ServerRequestInterface
+    {
+        return $this->message;
     }
 
     /**
@@ -68,12 +50,13 @@ class Request extends Message
      */
     public function requestLine()
     {
-        $uri = $this->url->path();
-        if ($this->url->query()) {
-            $uri .= '?' . $this->url->query();
+        $url = $this->url();
+        $uri = $url->path();
+        if ($url->query()) {
+            $uri .= '?' . $url->query();
         }
 
-        return sprintf('%s %s HTTP/%s', $this->method, $uri, $this->version);
+        return sprintf('%s %s HTTP/%s', $this->method(), $uri, $this->version());
     }
 
     /**
@@ -83,7 +66,7 @@ class Request extends Message
      */
     public function method()
     {
-        return $this->method;
+        return $this->message->getMethod();
     }
 
     /**
@@ -93,7 +76,7 @@ class Request extends Message
      */
     public function url()
     {
-        return $this->url;
+        return new Url($this->message->getUri());
     }
 
     /**
@@ -105,10 +88,10 @@ class Request extends Message
     public function query($var = null)
     {
         if ($var === null) {
-            return $this->query;
+            return $this->message->getQueryParams();
         }
 
-        return $this->query[$var] ?? null;
+        return $this->message->getQueryParams()[$var] ?? null;
     }
 
     /**
@@ -120,26 +103,41 @@ class Request extends Message
     public function post($var = null)
     {
         if ($var === null) {
-            return $this->post;
+            return $this->message->getParsedBody();
         }
 
-        return $this->post[$var] ?? null;
+        return $this->message->getParsedBody()[$var] ?? null;
     }
 
     /**
-     * Get parsed body (aka POST) parameter(s)
+     * Get multipart files
      *
      * @param array $key
      * @return null|Upload|Upload[]|Upload[][]|...
      */
     public function files(...$key)
     {
-        $files = $this->files;
+        $files = $this->toFiles($this->message->getUploadedFiles());
         while ($key) {
             $files = $files[array_shift($key)] ?? null;
         }
 
         return $files;
+    }
+
+    /**
+     * @param array $files
+     * @return Upload|Upload[]|Upload[][]
+     */
+    protected function toFiles(array $files): array
+    {
+        return array_map(function ($file) {
+            if (is_array($file)) {
+                return $this->toFiles($file);
+            }
+
+            return new Upload($file);
+        }, $files);
     }
 
     /**
@@ -151,10 +149,27 @@ class Request extends Message
     public function cookie($name = null)
     {
         if ($name === null) {
-            return $this->cookie;
+            return $this->message->getCookieParams();
         }
 
-        return $this->cookie[$name] ?? null;
+        return $this->message->getCookieParams()[$name] ?? null;
+    }
+
+    /**
+     * @param string $var
+     * @return string|null
+     */
+    public function server(string $var)
+    {
+        return $this->message->getServerParams()[$var] ?? null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function clientIp()
+    {
+        return $this->server('REMOTE_ADDR');
     }
 
     /**
@@ -164,35 +179,17 @@ class Request extends Message
      */
     protected function setMethod($method)
     {
-        $this->method = strtoupper($method);
+        $this->message = $this->message->withMethod($method);
     }
 
     /**
      * Set URL
      *
-     * @param string $url
+     * @param Url $url
      */
-    protected function setUrl($url)
+    protected function setUrl(Url $url)
     {
-        $this->url = $url instanceof Url ? $url : new Url($url);
-
-        parse_str($this->url->query(), $this->query);
-    }
-
-    /**
-     * Set body
-     *
-     * @param string $body
-     */
-    protected function setBody($body = null)
-    {
-        parent::setBody($body);
-
-        if (is_array($body) || is_object($body)) {
-            $this->post = (array) $body;
-        } else {
-            $this->post = [];
-        }
+        $this->message = $this->message->withUri($url->getUri());
     }
 
     /**
@@ -204,9 +201,11 @@ class Request extends Message
     protected function setCookie($name, $value = null)
     {
         if ($value !== null) {
-            $this->cookie[$name] = $value;
-        } elseif (isset($this->cookie[$name])) {
-            unset($this->cookie[$name]);
+            $this->message = $this->message->withCookieParams(array_merge($this->cookie(), [$name => $value]));
+        } elseif ($this->cookie($name)) {
+            $cookies = $this->cookie();
+            unset($cookies[$name]);
+            $this->message = $this->message->withCookieParams($cookies);
         }
     }
 
@@ -227,10 +226,10 @@ class Request extends Message
     /**
      * Get new request with URL
      *
-     * @param string|Url $url
+     * @param Url $url
      * @return Request
      */
-    public function withUrl($url)
+    public function withUrl(Url $url)
     {
         $new = clone $this;
         $new->setUrl($url);
@@ -247,7 +246,7 @@ class Request extends Message
     public function withQuery(array $query)
     {
         $new = clone $this;
-        $new->setUrl($this->url->withQuery(http_build_query($query)));
+        $new->setUrl($this->url()->withQuery(http_build_query($query)));
 
         return $new;
     }
@@ -255,13 +254,15 @@ class Request extends Message
     /**
      * Get new request with uploaded files
      *
-     * @param array $files
+     * @param Upload[] $files
      * @return Request
      */
     public function withFiles(array $files)
     {
-        $new = clone $this;
-        $new->files = Upload::capture($files);
+        $new          = clone $this;
+        $new->message = $this->message->withUploadedFiles(array_map(function (Upload $upload): UploadedFileInterface {
+            return $upload->file();
+        }, $files));
 
         return $new;
     }
@@ -279,37 +280,5 @@ class Request extends Message
         $new->setCookie($name, $value);
 
         return $new;
-    }
-
-    /**
-     * Capture request
-     *
-     * @param array $server
-     * @param array $post
-     * @param array $files
-     * @param array $headers
-     * @param array $cookies
-     * @return Request
-     */
-    public static function capture(
-        array $server = null,
-        array $post = null,
-        array $files = null,
-        array $headers = null,
-        array $cookies = null
-    ) {
-        $server  = $server ?? $_SERVER;
-        $post    = $post ?? $_POST;
-        $cookies = $cookies ?? $_COOKIE;
-
-        $method = $server['REQUEST_METHOD'] ?? 'GET';
-        $url    = Url::capture($server);
-
-        $request = new static($method, $url, $post);
-        $request->files   = Upload::capture($files);
-        $request->headers = Header::capture($headers);
-        $request->cookie  = $cookies;
-
-        return $request;
     }
 }

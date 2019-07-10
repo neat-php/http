@@ -1,11 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Neat\Http;
+
+use Neat\Http\Header\Authorization;
+use Neat\Http\Header\ContentType;
+use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * HTTP Message
  */
-class Message
+abstract class Message
 {
     /**
      * HTTP header line ending
@@ -13,34 +18,31 @@ class Message
     const EOL = "\r\n";
 
     /**
-     * @var string|null
+     * @var MessageInterface
      */
-    protected $body;
+    protected $message;
 
     /**
-     * Headers indexed by lowercase name
-     *
-     * @var Header[]
+     * Message constructor.
+     * @param MessageInterface $message
      */
-    protected $headers = [];
-
-    /**
-     * @var string
-     */
-    protected $version = '1.1';
+    public function __construct(MessageInterface $message)
+    {
+        $this->message = $message;
+    }
 
     /**
      * Get message as a string
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         $message = '';
-        foreach ($this->headers as $header) {
+        foreach ($this->headers() as $header) {
             $message .= $header->line() . self::EOL;
         }
-        $message .= self::EOL . $this->body;
+        $message .= self::EOL . $this->message->getBody()->getContents();
 
         return $message;
     }
@@ -48,40 +50,92 @@ class Message
     /**
      * Get body
      *
-     * @return string|null
+     * @return string
      */
-    public function body()
+    public function body(): string
     {
-        return $this->body;
+        return $this->message->getBody()->getContents();
+    }
+
+    /**
+     * @return StreamInterface
+     */
+    public function bodyStream(): StreamInterface
+    {
+        return $this->message->getBody();
     }
 
     /**
      * Get header value by name
      *
      * @param string $name
-     * @param string $default
-     * @return string
+     * @return Header|null
      */
-    public function header($name, $default = null)
+    public function header(string $name)
     {
-        $header = $this->headers[strtolower($name)] ?? null;
+        $headerValues = $this->message->getHeader($name);
+        if (count($headerValues) === 0) {
+            return null;
+        }
 
-        return $header ? $header->value() : $default;
+        $value = reset($headerValues);
+
+        return new Header($name, $value);
     }
 
     /**
      * Get header values
      *
-     * @return array
+     * @return Header[]
      */
     public function headers()
     {
-        $headers = [];
-        foreach ($this->headers as $header) {
-            $headers[$header->name()] = $header->value();
-        }
+        $headers = $this->message->getHeaders();
 
-        return $headers;
+        return array_map(function (string $name, array $values) {
+            return new Header($name, reset($values));
+        }, array_keys($headers), $headers);
+    }
+
+    /**
+     * @return Authorization|null
+     */
+    public function authorization()
+    {
+        return Authorization::read($this);
+    }
+
+    /**
+     * @param $type
+     * @param $credentials
+     * @return static
+     */
+    public function withAuthorization(string $type, string $credentials)
+    {
+        $authorization = new Authorization($type, $credentials);
+
+        return $authorization->write($this);
+    }
+
+    /**
+     * @return ContentType|null
+     */
+    public function contentType()
+    {
+        return ContentType::read($this);
+    }
+
+    /**
+     * @param string      $value
+     * @param string|null $charset
+     * @param string|null $boundary
+     * @return static
+     */
+    public function withContentType(string $value, string $charset = null, string $boundary = null)
+    {
+        $contentType = new ContentType($value, $charset, $boundary);
+
+        return $contentType->write($this);
     }
 
     /**
@@ -91,33 +145,26 @@ class Message
      */
     public function version()
     {
-        return $this->version;
+        return $this->message->getProtocolVersion();
     }
 
     /**
      * Set body
      *
-     * @param mixed $body
+     * @param StreamInterface $stream
      */
-    protected function setBody($body = null)
+    protected function setBody(StreamInterface $stream)
     {
-        if (is_string($body) || is_null($body)) {
-            $this->body = $body;
-        } elseif (is_object($body) && method_exists($body, '__toString')) {
-            $this->body = $body->__toString();
-        } else {
-            $this->body = json_encode($body);
-            $this->setHeader('Content-Type', 'application/json');
-        }
+        $this->message = $this->message->withBody($stream);
     }
 
     /**
      * Get instance with body
      *
-     * @param mixed $body
+     * @param StreamInterface $body
      * @return static
      */
-    public function withBody($body = null)
+    public function withBody(StreamInterface $body)
     {
         $new = clone $this;
         $new->setBody($body);
@@ -133,7 +180,7 @@ class Message
      */
     protected function setHeader($name, $value)
     {
-        $this->headers[strtolower($name)] = new Header($name, $value);
+        $this->message = $this->message->withHeader($name, $value);
     }
 
     /**
@@ -159,8 +206,8 @@ class Message
      */
     public function withoutHeader($name)
     {
-        $new = clone $this;
-        unset($new->headers[strtolower($name)]);
+        $new          = clone $this;
+        $new->message = $this->message->withoutHeader($name);
 
         return $new;
     }
@@ -173,8 +220,8 @@ class Message
      */
     public function withVersion(string $version)
     {
-        $new = clone $this;
-        $new->version = $version;
+        $new          = clone $this;
+        $new->message = $this->message->withProtocolVersion($version);
 
         return $new;
     }

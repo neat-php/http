@@ -1,6 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Neat\Http;
+
+use Neat\Http\Guzzle\ResponseFactory;
 
 class Input
 {
@@ -102,16 +104,17 @@ class Input
      * Retains the input data using the session and returns a redirect response
      * so the user can safely resume entering the input at the referring URL.
      *
+     * @param ResponseFactory $response
      * @return Response
      */
-    public function retry()
+    public function retry(ResponseFactory $response)
     {
         $this->session->set('input', [
             'data'   => $this->data,
             'errors' => $this->errors,
         ]);
 
-        return Response::redirect($this->request->header('referer'));
+        return $response->redirect()->back($this->request);
     }
 
     /**
@@ -201,8 +204,8 @@ class Input
             $params = explode(':', $filter);
             $filter = is_string($key) ? $key : array_shift($params);
             $filter = $this->filters[$filter] ?? function (&$data) use ($filter, $params) {
-                $data = $filter($data, ...$params);
-            };
+                    $data = $filter($data, ...$params);
+                };
 
             $errors = $filter($value, ...$params);
             if ($errors) {

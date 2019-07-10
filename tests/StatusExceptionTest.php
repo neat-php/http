@@ -10,13 +10,13 @@ class StatusExceptionTest extends TestCase
 {
     /**
      * Test exception throwing
-     *
-     * @expectedException \Neat\Http\StatusException
-     * @expectedExceptionCode 404
-     * @expectedExceptionMessage Not Found
      */
     public function testThrowException()
     {
+        $this->expectException(StatusException::class);
+        $this->expectExceptionCode(404);
+        $this->expectExceptionMessage('Not Found');
+
         throw new StatusException(404);
     }
 

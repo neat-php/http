@@ -1,6 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Neat\Http;
+
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * HTTP Response
@@ -8,22 +10,18 @@ namespace Neat\Http;
 class Response extends Message
 {
     /**
-     * @var Status
+     * @var ResponseInterface
      */
-    protected $status;
+    protected $message;
 
     /**
      * Response constructor
      *
-     * @param mixed $response
+     * @param ResponseInterface $response
      */
-    public function __construct($response = null)
+    public function __construct(ResponseInterface $response)
     {
-        if (is_int($response) || $response instanceof Status) {
-            $this->setStatus($response);
-        } else {
-            $this->setBody($response);
-        }
+        parent::__construct($response);
     }
 
     /**
@@ -31,9 +29,17 @@ class Response extends Message
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->statusLine() . self::EOL . parent::__toString();
+    }
+
+    /**
+     * @return ResponseInterface
+     */
+    public function psr(): ResponseInterface
+    {
+        return $this->message;
     }
 
     /**
@@ -41,9 +47,9 @@ class Response extends Message
      *
      * @return string
      */
-    public function statusLine()
+    public function statusLine(): string
     {
-        return 'HTTP/' . $this->version . ' ' . $this->status();
+        return 'HTTP/' . $this->version() . ' ' . $this->status();
     }
 
     /**
@@ -51,13 +57,14 @@ class Response extends Message
      *
      * @return Status
      */
-    public function status()
+    public function status(): Status
     {
-        if ($this->status) {
-            return $this->status;
+        if ($this->message->getStatusCode()) {
+            return new Status($this->message->getStatusCode(), $this->message->getReasonPhrase());
         }
+        $body = $this->message->getBody();
 
-        return new Status($this->body === null ? 204 : 200);
+        return new Status($body->getSize() === 0 ? 204 : 200);
     }
 
     /**
@@ -67,11 +74,11 @@ class Response extends Message
      */
     protected function setStatus($status)
     {
-        if (!$status instanceof Status) {
-            $status = new Status($status);
+        if ($status instanceof Status) {
+            $this->message = $this->message->withStatus($status->code(), $status->reason());
+        } else {
+            $this->message = $this->message->withStatus($status);
         }
-
-        $this->status = $status;
     }
 
     /**
@@ -94,27 +101,13 @@ class Response extends Message
     public function send()
     {
         header($this->statusLine());
-        foreach ($this->headers as $header) {
+        foreach ($this->headers() as $header) {
             header($header->line());
         }
 
-        if (is_string($this->body)) {
-            echo $this->body;
+        $body = $this->message->getBody();
+        while (!$body->eof()) {
+            echo $body->read(1024);
         }
-    }
-
-    /**
-     * Create redirect response
-     *
-     * @param string $location
-     * @param bool   $permanent
-     * @return static
-     */
-    public static function redirect($location, $permanent = false)
-    {
-        $redirect = new static($permanent ? 301 : 302);
-        $redirect->setHeader('Location', $location);
-
-        return $redirect;
     }
 }

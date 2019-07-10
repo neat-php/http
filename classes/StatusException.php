@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Neat\Http;
 
@@ -16,7 +16,7 @@ class StatusException extends RuntimeException
      * Exception constructor
      *
      * @param int       $code
-     * @param string    $reason   (optional)
+     * @param string    $reason (optional)
      * @param Throwable $previous (optional)
      */
     public function __construct(int $code, string $reason = null, Throwable $previous = null)

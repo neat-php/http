@@ -1,6 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Neat\Http;
+
+use Psr\Http\Message\UriInterface;
 
 /**
  * URL according to RFC 3986
@@ -10,55 +12,26 @@ namespace Neat\Http;
 class Url
 {
     /**
-     * @var string
+     * @var UriInterface
      */
-    protected $scheme = '';
-
-    /**
-     * @var string
-     */
-    protected $username = '';
-
-    /**
-     * @var string
-     */
-    protected $password = '';
-
-    /**
-     * @var string
-     */
-    protected $host = '';
-
-    /**
-     * @var int
-     */
-    protected $port;
-
-    /**
-     * @var string
-     */
-    protected $path = '';
-
-    /**
-     * @var string
-     */
-    protected $query = '';
-
-    /**
-     * @var string
-     */
-    protected $fragment = '';
+    private $url;
 
     /**
      * Constructor
      *
-     * @param string $url
+     * @param UriInterface $url
      */
-    public function __construct($url = null)
+    public function __construct(UriInterface $url)
     {
-        if ($url) {
-            $this->set($url);
-        }
+        $this->url = $url;
+    }
+
+    /**
+     * @return UriInterface
+     */
+    public function getUri(): UriInterface
+    {
+        return $this->url;
     }
 
     /**
@@ -76,48 +49,26 @@ class Url
      *
      * @return string
      */
-    protected function get()
+    public function get()
     {
         $url = '';
-        if ($this->scheme) {
-            $url = $this->scheme . ':';
+        if ($this->scheme()) {
+            $url = $this->scheme() . ':';
         }
-        if ($this->host) {
+        if ($this->host()) {
             $url .= '//' . $this->authority();
         }
-        if ($this->path) {
-            $url .= '/' . ltrim($this->path, '/');
+        if ($this->path()) {
+            $url .= '/' . ltrim($this->path(), '/');
         }
-        if ($this->query) {
-            $url .= '?' . $this->query;
+        if ($this->query()) {
+            $url .= '?' . $this->query();
         }
-        if ($this->fragment) {
-            $url .= '#' . $this->fragment;
+        if ($this->fragment()) {
+            $url .= '#' . $this->fragment();
         }
 
         return $url;
-    }
-
-    /**
-     * Set URL as string
-     *
-     * @param string $url
-     */
-    protected function set($url)
-    {
-        $parts = parse_url($url);
-        if (!$parts) {
-            throw new \InvalidArgumentException('URL malformed');
-        }
-
-        $this->scheme   = isset($parts['scheme']) ? strtolower($parts['scheme']) : '';
-        $this->username = $parts['user'] ?? '';
-        $this->password = $parts['pass'] ?? '';
-        $this->host     = isset($parts['host']) ? strtolower($parts['host']) : '';
-        $this->port     = isset($parts['port']) ? intval($parts['port']) : null;
-        $this->path     = $parts['path'] ?? '';
-        $this->query    = $parts['query'] ?? '';
-        $this->fragment = $parts['fragment'] ?? '';
     }
 
     /**
@@ -127,7 +78,34 @@ class Url
      */
     public function scheme()
     {
-        return $this->scheme;
+        return $this->url->getScheme();
+    }
+
+    /**
+     * @return array
+     */
+    protected function userInfo(): array
+    {
+        $userInfo      = $this->url->getUserInfo();
+        $userInfoParts = $userInfo ? explode(':', $userInfo, 2) : [];
+        if (count($userInfoParts) === 0) {
+            return [
+                'name'     => null,
+                'password' => null,
+            ];
+        }
+        if (count($userInfoParts) === 1) {
+            return [
+                'name'     => reset($userInfoParts),
+                'password' => null,
+            ];
+        }
+        list($name, $password) = $userInfoParts;
+
+        return [
+            'name'     => $name,
+            'password' => $password,
+        ];
     }
 
     /**
@@ -137,7 +115,7 @@ class Url
      */
     public function username()
     {
-        return $this->username;
+        return $this->userInfo()['name'];
     }
 
     /**
@@ -147,7 +125,7 @@ class Url
      */
     public function password()
     {
-        return $this->password;
+        return $this->userInfo()['password'];
     }
 
     /**
@@ -157,7 +135,7 @@ class Url
      */
     public function host()
     {
-        return $this->host;
+        return $this->url->getHost();
     }
 
     /**
@@ -167,14 +145,14 @@ class Url
      */
     public function port()
     {
-        if ($this->port == 80 && $this->scheme == 'http') {
+        if ($this->url->getPort() == 80 && $this->scheme() == 'http') {
             return null;
         }
-        if ($this->port == 443 && $this->scheme == 'https') {
+        if ($this->url->getPort() == 443 && $this->scheme() == 'https') {
             return null;
         }
 
-        return $this->port;
+        return $this->url->getPort();
     }
 
     /**
@@ -184,7 +162,7 @@ class Url
      */
     public function path()
     {
-        return $this->path;
+        return $this->url->getPath();
     }
 
     /**
@@ -194,7 +172,7 @@ class Url
      */
     public function query()
     {
-        return $this->query;
+        return $this->url->getQuery();
     }
 
     /**
@@ -204,7 +182,7 @@ class Url
      */
     public function fragment()
     {
-        return $this->fragment;
+        return $this->url->getFragment();
     }
 
     /**
@@ -215,12 +193,12 @@ class Url
      */
     public function authority()
     {
-        $userInfo = $this->username;
-        if ($this->password) {
-            $userInfo .= ':' . $this->password;
+        $userInfo = $this->username();
+        if ($this->password()) {
+            $userInfo .= ':' . $this->password();
         }
         $port      = $this->port();
-        $authority = $this->host;
+        $authority = $this->host();
         if ($authority && $userInfo) {
             $authority = $userInfo . '@' . $authority;
         }
@@ -239,8 +217,8 @@ class Url
      */
     public function withScheme($scheme)
     {
-        $new = clone $this;
-        $new->scheme = strtolower(rtrim($scheme, ':'));
+        $new      = clone $this;
+        $new->url = $this->url->withScheme($scheme);
 
         return $new;
     }
@@ -254,9 +232,8 @@ class Url
      */
     public function withUserInfo($username, $password = '')
     {
-        $new = clone $this;
-        $new->username = $username;
-        $new->password = $password;
+        $new      = clone $this;
+        $new->url = $this->url->withUserInfo($username, $password);
 
         return $new;
     }
@@ -267,10 +244,10 @@ class Url
      * @param string $host Host name or null to remove the host
      * @return static
      */
-    public function withHost($host)
+    public function withHost(string $host)
     {
-        $new = clone $this;
-        $new->host = strtolower($host);
+        $new      = clone $this;
+        $new->url = $this->url->withHost($host);
 
         return $new;
     }
@@ -288,8 +265,8 @@ class Url
             throw new \InvalidArgumentException('Invalid port number: ' . $port);
         }
 
-        $new = clone $this;
-        $new->port = $port;
+        $new      = clone $this;
+        $new->url = $this->url->withPort($port);
 
         return $new;
     }
@@ -302,8 +279,8 @@ class Url
      */
     public function withPath($path)
     {
-        $new = clone $this;
-        $new->path = $path;
+        $new      = clone $this;
+        $new->url = $this->url->withPath($path);
 
         return $new;
     }
@@ -316,8 +293,8 @@ class Url
      */
     public function withQuery($query)
     {
-        $new = clone $this;
-        $new->query = $query;
+        $new      = clone $this;
+        $new->url = $this->url->withQuery($query);
 
         return $new;
     }
@@ -330,40 +307,9 @@ class Url
      */
     public function withFragment($fragment)
     {
-        $new = clone $this;
-        $new->fragment = $fragment;
+        $new      = clone $this;
+        $new->url = $this->url->withFragment($fragment);
 
         return $new;
-    }
-
-    /**
-     * Capture the URL from the SERVER super global
-     *
-     * @see https://secure.php.net/manual/en/reserved.variables.server.php
-     * @param array $server SERVER super global
-     * @return static Captured URL
-     */
-    public static function capture(array $server = null)
-    {
-        if (!$server) {
-            $server = $_SERVER;
-        }
-
-        $source = 'http:';
-        if (isset($server['HTTPS']) && $server['HTTPS'] && $server['HTTPS'] != 'off') {
-            $source = 'https:';
-        }
-        if (isset($server['HTTP_HOST'])) {
-            $source .= '//' . $server['HTTP_HOST'];
-        }
-        if (isset($server['REQUEST_URI'])) {
-            $source .= $server['REQUEST_URI'];
-        }
-
-        $url = new static($source);
-        $url->username = $server['PHP_AUTH_USER'] ?? null;
-        $url->password = $server['PHP_AUTH_PW'] ?? null;
-
-        return $url;
     }
 }

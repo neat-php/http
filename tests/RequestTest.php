@@ -2,10 +2,16 @@
 
 namespace Neat\Http\Test;
 
+use Neat\Http\Header;
 use Neat\Http\Request;
 use Neat\Http\Upload;
 use Neat\Http\Url;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UploadedFileInterface;
+use Psr\Http\Message\UriInterface;
 
 class RequestTest extends TestCase
 {
@@ -14,14 +20,31 @@ class RequestTest extends TestCase
      */
     public function testEmpty()
     {
-        $request = new Request;
+        /** @var StreamInterface|MockObject $psrStream */
+        $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
+        /** @var UriInterface|MockObject $psrUri */
+        $psrUri = $this->getMockForAbstractClass(UriInterface::class);
+        /** @var ServerRequestInterface|MockObject $psrRequest */
+        $psrRequest = $this->getMockForAbstractClass(ServerRequestInterface::class);
 
-        $this->assertNull($request->body());
-        $this->assertSame('', (string) $request->url());
+        $psrRequest->expects($this->at(0))->method('getBody')->willReturn($psrStream);
+        $psrStream->expects($this->at(0))->method('getContents')->willReturn('');
+        $psrRequest->expects($this->at(1))->method('getUri')->willReturn($psrUri);
+        $psrRequest->expects($this->at(2))->method('getMethod')->willReturn('GET');
+        $psrRequest->expects($this->at(3))->method('getQueryParams')->willReturn([]);
+        $psrRequest->expects($this->at(4))->method('getParsedBody')->willReturn([]);
+        $psrRequest->expects($this->at(5))->method('getCookieParams')->willReturn([]);
+//        $psrRequest->expects($this->at(6))->method('getParsedBody')->willReturn([]);
+
+        $request = new Request($psrRequest);
+
+        $this->assertSame('', $request->body());
+        $this->assertSame('', (string)$request->url());
         $this->assertsame('GET', $request->method());
         $this->assertSame([], $request->query());
         $this->assertSame([], $request->post());
-        $this->assertSame([], $request->files());
+//        @TODO
+//        $this->assertSame([], $request->files());
         $this->assertSame([], $request->cookie());
     }
 
@@ -30,12 +53,31 @@ class RequestTest extends TestCase
      */
     public function testGet()
     {
-        $request = new Request('GET', 'http://localhost/');
+        /** @var StreamInterface|MockObject $psrStream */
+        $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
+        /** @var UriInterface|MockObject $psrStream */
+        $psrUri = $this->getMockForAbstractClass(UriInterface::class);
+        /** @var ServerRequestInterface|MockObject $psrRequest */
+        $psrRequest = $this->getMockForAbstractClass(ServerRequestInterface::class);
 
-        $this->assertNull($request->body());
-        $this->assertSame('http://localhost/', (string) $request->url());
+        $psrRequest->expects($this->at(0))->method('getBody')->willReturn($psrStream);
+        $psrStream->expects($this->at(0))->method('getContents')->willReturn('');
+        $psrRequest->expects($this->exactly(2))->method('getUri')->willReturn($psrUri);
+        $psrRequest->expects($this->any())->method('getProtocolVersion')->willReturn('1.1');
+        $psrUri->expects($this->any())->method('getScheme')->willReturn('http');
+        $psrUri->expects($this->any())->method('getHost')->willReturn('localhost');
+        $psrUri->expects($this->any())->method('getPath')->willReturn('/');
+        $psrRequest->expects($this->any())->method('getMethod')->willReturn('GET');
+        $psrRequest->expects($this->any())->method('getHeaders')->willReturn([]);
+        $psrRequest->expects($this->any())->method('getBody')->willReturn($psrStream);
+
+        $request = new Request($psrRequest);
+//        $request = new Request('GET', 'http://localhost/');
+
+        $this->assertSame('', $request->body());
+        $this->assertSame('http://localhost/', (string)$request->url());
         $this->assertsame('GET', $request->method());
-        $this->assertsame("GET / HTTP/1.1\r\n\r\n", (string) $request);
+        $this->assertsame("GET / HTTP/1.1\r\n\r\n", (string)$request);
     }
 
     /**
@@ -43,16 +85,38 @@ class RequestTest extends TestCase
      */
     public function testPost()
     {
-        $request = new Request('POST', 'https://localhost/resource?id=1', ['json' => true]);
+        /** @var StreamInterface|MockObject $psrStream */
+        $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
+        /** @var UriInterface|MockObject $psrUri */
+        $psrUri = $this->getMockForAbstractClass(UriInterface::class);
+        /** @var ServerRequestInterface|MockObject $psrRequest */
+        $psrRequest = $this->getMockForAbstractClass(ServerRequestInterface::class);
 
-        $this->assertSame('{"json":true}', (string) $request->body());
+        $psrRequest->expects($this->any())->method('getMethod')->willReturn('POST');
+        $psrRequest->expects($this->any())->method('getBody')->willReturn($psrStream);
+        $psrStream->expects($this->any())->method('getContents')->willReturn('{"json":true}');
+        $psrRequest->expects($this->any())->method('getParsedBody')->willReturn(['json' => true]);
+        $psrRequest->expects($this->any())->method('getHeader')->willReturn(['application/json']);
+        $psrRequest->expects($this->any())->method('getHeaders')->willReturn(['Content-Type' => ['application/json']]);
+        $psrRequest->expects($this->any())->method('getProtocolVersion')->willReturn('1.1');
+        $psrRequest->expects($this->any())->method('getUri')->willReturn($psrUri);
+        $psrUri->method('getScheme')->willReturn('https');
+        $psrUri->method('getHost')->willReturn('localhost');
+        $psrUri->method('getPath')->willReturn('/resource');
+        $psrUri->method('getQuery')->willReturn('id=1');
+
+        $request = new Request($psrRequest);
+//        $request    = new Request('POST', 'https://localhost/resource?id=1', ['json' => true]);
+
+        $this->assertSame('{"json":true}', (string)$request->body());
         $this->assertSame(['json' => true], $request->post());
         $this->assertSame(true, $request->post('json'));
         $this->assertNull($request->post('unknown'));
-        $this->assertSame('application/json', $request->header('Content-Type'));
-        $this->assertSame('https://localhost/resource?id=1', (string) $request->url());
+        $this->assertEquals(new Header('Content-Type', 'application/json'), $request->header('Content-Type'));
+        $this->assertSame('https://localhost/resource?id=1', (string)$request->url());
         $this->assertsame('POST', $request->method());
-        $this->assertsame("POST /resource?id=1 HTTP/1.1\r\nContent-Type: application/json\r\n\r\n{\"json\":true}", (string) $request);
+        $this->assertsame("POST /resource?id=1 HTTP/1.1\r\nContent-Type: application/json\r\n\r\n{\"json\":true}",
+            (string)$request);
     }
 
     /**
@@ -60,18 +124,23 @@ class RequestTest extends TestCase
      */
     public function testWithFiles()
     {
-        $request = new Request('POST');
-        $mutated = $request->withFiles(['avatar' => [
-                'tmp_name' => __DIR__ . '/test.txt',
-                'name'     => 'my-avatar.png',
-                'size'     => 90996,
-                'type'     => 'image/png',
-                'error'    => 0,
-            ],
-        ]);
+        /** @var UploadedFileInterface|MockObject $psrUpload */
+        $psrUpload = $this->getMockForAbstractClass(UploadedFileInterface::class);
+        /** @var ServerRequestInterface|MockObject $psrRequest */
+        $psrRequest = $this->getMockForAbstractClass(ServerRequestInterface::class);
+        /** @var ServerRequestInterface|MockObject $psrRequest2 */
+        $psrRequest2 = clone $psrRequest;
+
+        $psrRequest->expects($this->at(0))->method('withUploadedFiles')->with(['avatar' => $psrUpload])->willReturn($psrRequest2);
+        $psrRequest2->expects($this->at(0))->method('getUploadedFiles')->willReturn(['avatar' => $psrUpload]);
+        $psrRequest2->expects($this->at(1))->method('getUploadedFiles')->willReturn(['avatar' => $psrUpload]);
+
+        $request = new Request($psrRequest);
+
+        $mutated = $request->withFiles(['avatar' => new Upload($psrUpload)]);
 
         $this->assertInstanceOf(Upload::class, $mutated->files('avatar'));
-        $this->assertEquals(['avatar' => new Upload(__DIR__ . '/test.txt', 'my-avatar.png', 'image/png')], $mutated->files());
+        $this->assertEquals(['avatar' => new Upload($psrUpload)], $mutated->files());
     }
 
     /**
@@ -79,7 +148,15 @@ class RequestTest extends TestCase
      */
     public function testWithMethod()
     {
-        $request = new Request('GET', 'http://localhost/');
+        /** @var ServerRequestInterface|MockObject $psrRequest */
+        $psrRequest = $this->getMockForAbstractClass(ServerRequestInterface::class);
+        /** @var ServerRequestInterface|MockObject $psrRequest2 */
+        $psrRequest2 = clone $psrRequest;
+
+        $psrRequest->expects($this->at(0))->method('withMethod')->with('POST')->willReturn($psrRequest2);
+        $psrRequest2->expects($this->at(0))->method('getMethod')->willReturn('POST');
+
+        $request = new Request($psrRequest);
 
         $this->assertSame('POST', $request->withMethod('POST')->method());
     }
@@ -89,10 +166,21 @@ class RequestTest extends TestCase
      */
     public function testWithUrl()
     {
-        $request = new Request('GET', 'http://localhost/');
-        $url     = new Url('https://example.com/');
+        /** @var UriInterface|MockObject $psrUri */
+        $psrUri = $this->getMockForAbstractClass(UriInterface::class);
+        /** @var ServerRequestInterface|MockObject $psrRequest */
+        $psrRequest = $this->getMockForAbstractClass(ServerRequestInterface::class);
+        /** @var ServerRequestInterface|MockObject $psrRequest2 */
+        $psrRequest2 = clone $psrRequest;
 
-        $this->assertSame($url, $request->withUrl($url)->url());
+        $psrRequest->expects($this->at(0))->method('withUri')->with($psrUri)->willReturn($psrRequest2);
+        $psrRequest2->expects($this->at(0))->method('getUri')->willReturn($psrUri);
+
+        $request = new Request($psrRequest);
+//        $request    = new Request('GET', 'http://localhost/');
+        $url = new Url($psrUri);
+
+        $this->assertEquals($url, $request->withUrl($url)->url());
     }
 
     /**
@@ -100,12 +188,36 @@ class RequestTest extends TestCase
      */
     public function testQuery()
     {
-        $empty = new Request('GET', '/');
+        /** @var ServerRequestInterface|MockObject $psrRequest */
+        $psrRequest = $this->getMockForAbstractClass(ServerRequestInterface::class);
+
+        $psrRequest->expects($this->any())->method('getQueryParams')->willReturn([]);
+
+        $empty = new Request($psrRequest);
+//        $empty      = new Request('GET', '/');
 
         $this->assertNull($empty->query('id'));
-        $this->assertSame([], $empty->query());
+        $this->assertEquals([], $empty->query());
 
-        $request = new Request('GET', '?id=1');
+        /** @var UriInterface|MockObject $psrUri */
+        $psrUri = $this->getMockForAbstractClass(UriInterface::class);
+        /** @var UriInterface|MockObject $psrUri2 */
+        $psrUri2 = clone $psrUri;
+        /** @var ServerRequestInterface|MockObject $psrRequest */
+        $psrRequest = $this->getMockForAbstractClass(ServerRequestInterface::class);
+        /** @var ServerRequestInterface|MockObject $psrRequest2 */
+        $psrRequest2 = clone $psrRequest;
+
+        $psrRequest->expects($this->any())->method('getQueryParams')->willReturn(['id' => '1']);
+        $psrRequest->expects($this->any())->method('getUri')->willReturn($psrUri);
+        $psrUri->expects($this->once())->method('withQuery')->with('page=1')->willReturn($psrUri2);
+        $psrRequest->expects($this->once())->method('withUri')->with($psrUri)->willReturn($psrRequest2);
+        $psrRequest2->expects($this->any())->method('getQueryParams')->willReturn(['page' => '1']);
+        $psrRequest2->expects($this->any())->method('getUri')->willReturn($psrUri2);
+        $psrUri2->expects($this->any())->method('getQuery')->willReturn('page=1');
+
+        $request = new Request($psrRequest);
+//        $request    = new Request('GET', '?id=1');
 
         $this->assertSame('1', $request->query('id'));
         $this->assertSame(['id' => '1'], $request->query());
@@ -123,7 +235,20 @@ class RequestTest extends TestCase
      */
     public function testCookie()
     {
-        $request  = new Request;
+        /** @var ServerRequestInterface|MockObject $psrRequest */
+        $psrRequest = $this->getMockForAbstractClass(ServerRequestInterface::class);
+        /** @var ServerRequestInterface|MockObject $psrRequest2 */
+        $psrRequest2 = clone $psrRequest;
+        $psrRequest3 = clone $psrRequest2;
+
+        $psrRequest->method('getCookieParams')->willReturn([]);
+        $psrRequest->expects($this->at(1))->method('withCookieParams')->with(['type' => 'chocolate chip'])->willReturn($psrRequest2);
+        $psrRequest2->method('getCookieParams')->willReturn(['type' => 'chocolate chip']);
+        $psrRequest2->method('withCookieParams')->with([])->willReturn($psrRequest3);
+        $psrRequest3->method('getCookieParams')->willReturn([]);
+
+        $request = new Request($psrRequest);
+
         $modified = $request->withCookie('type', 'chocolate chip');
 
         $this->assertNotSame($request, $modified);
@@ -132,26 +257,5 @@ class RequestTest extends TestCase
         $this->assertSame('chocolate chip', $modified->cookie('type'));
         $this->assertSame(['type' => 'chocolate chip'], $modified->cookie());
         $this->assertNull($modified->withCookie('type', null)->cookie('type'));
-    }
-
-    /**
-     * Test capturing the request
-     */
-    public function testCapture()
-    {
-        $request = Request::capture(
-            ['HTTP_HOST' => 'example.com', 'REQUEST_METHOD' => 'POST', 'REQUEST_URI' => '/page/create'],
-            ['title' => 'about'],
-            [],
-            ['User-Agent' => 'Test/1.0'],
-            ['type' => 'chocolate chip']
-        );
-
-        $this->assertSame('POST', $request->method());
-        $this->assertSame('http://example.com/page/create', (string) $request->url());
-        $this->assertSame(['title' => 'about'], $request->post());
-        $this->assertSame([], $request->files());
-        $this->assertSame('Test/1.0', $request->header('User-Agent'));
-        $this->assertSame('chocolate chip', $request->cookie('type'));
     }
 }

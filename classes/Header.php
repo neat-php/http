@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Neat\Http;
 
@@ -10,12 +10,12 @@ class Header
     /**
      * @var string
      */
-    public $name;
+    private $name;
 
     /**
      * @var string
      */
-    public $value;
+    private $value;
 
     /**
      * Header constructor
@@ -34,7 +34,7 @@ class Header
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->line();
     }
@@ -44,7 +44,7 @@ class Header
      *
      * @return string
      */
-    public function line()
+    public function line(): string
     {
         return sprintf('%s: %s', $this->name, $this->value);
     }
@@ -54,7 +54,7 @@ class Header
      *
      * @return string
      */
-    public function name()
+    public function name(): string
     {
         return $this->name;
     }
@@ -64,25 +64,8 @@ class Header
      *
      * @return string
      */
-    public function value()
+    public function value(): string
     {
         return $this->value;
-    }
-
-    /**
-     * Capture headers
-     *
-     * @param array $headers Headers
-     * @return Header[]
-     */
-    public static function capture(array $headers = null)
-    {
-        $headers  = $headers ?? apache_request_headers();
-        $captured = [];
-        foreach ($headers as $name => $value) {
-            $captured[strtolower($name)] = new Header($name, $value);
-        }
-
-        return $captured;
     }
 }
