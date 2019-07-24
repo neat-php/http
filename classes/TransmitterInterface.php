@@ -6,7 +6,7 @@ use Neat\Http\Response\Redirect;
 
 interface TransmitterInterface
 {
-    public function html(): Response;
+    public function html(string $html): Response;
 
     public function json($body): Response;
 
