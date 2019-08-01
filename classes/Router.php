@@ -285,6 +285,8 @@ class Router
             }
         }
         if ($this->wildcard) {
+            array_unshift($segments, $segment);
+            $arguments = $segments;
             return $this->wildcard;
         }
 
