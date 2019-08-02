@@ -82,6 +82,16 @@ class Url
     }
 
     /**
+     * Returns whether https is used or not
+     *
+     * @return bool
+     */
+    public function isSecure(): bool
+    {
+        return $this->scheme() === 'https';
+    }
+
+    /**
      * @return array
      */
     protected function userInfo(): array
@@ -297,6 +307,17 @@ class Url
         $new->url = $this->url->withQuery($query);
 
         return $new;
+    }
+
+    /**
+     * @param array $parameters
+     * @return static
+     */
+    public function withQueryParameters(array $parameters)
+    {
+        parse_str($this->query(), $query);
+
+        return $this->withQuery(build_query(array_merge($query, $parameters)));
     }
 
     /**
