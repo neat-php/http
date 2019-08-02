@@ -43,9 +43,7 @@ class Upload
         if (!$this->file->getStream()->isReadable()) {
             throw new RuntimeException('Uploaded file already moved');
         }
-        if (!$this->file->moveTo($destination)) {
-            throw new RuntimeException('Failed moving uploaded file');
-        }
+        $this->file->moveTo($destination);
     }
 
     /**
