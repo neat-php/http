@@ -2,10 +2,9 @@
 
 namespace Neat\Http;
 
-interface ReceiverInterface
+/**
+ * @deprecated Use the Receiver instead
+ */
+interface ReceiverInterface extends Receiver
 {
-    /**
-     * @return Request
-     */
-    public function request(): Request;
 }
