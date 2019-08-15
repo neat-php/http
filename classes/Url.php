@@ -2,6 +2,7 @@
 
 namespace Neat\Http;
 
+use InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
 
 /**
@@ -267,12 +268,12 @@ class Url
      *
      * @param int|null $port Port number to add or null to remove the port number
      * @return static
-     * @throws \InvalidArgumentException for invalid ports.
+     * @throws InvalidArgumentException for invalid ports.
      */
     public function withPort(int $port = null)
     {
         if ($port !== null && ($port < 0 || $port > 65536)) {
-            throw new \InvalidArgumentException('Invalid port number: ' . $port);
+            throw new InvalidArgumentException('Invalid port number: ' . $port);
         }
 
         $new      = clone $this;
@@ -317,7 +318,7 @@ class Url
     {
         parse_str($this->query(), $query);
 
-        return $this->withQuery(build_query(array_merge($query, $parameters)));
+        return $this->withQuery(http_build_query(array_merge($query, $parameters)));
     }
 
     /**
