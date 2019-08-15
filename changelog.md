@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - Fixed error in Url->withQueryParameters().
+- Fixed broken ResponseFactory reference.
 
 ## [0.2.3] - 2019-08-15
 ### Changed

@@ -2,7 +2,7 @@
 
 namespace Neat\Http;
 
-use Neat\Http\Guzzle\ResponseFactory;
+use RuntimeException;
 
 class Input
 {
@@ -72,7 +72,7 @@ class Input
     public function load(...$sources)
     {
         if (!$sources) {
-            throw new \RuntimeException('Sources must not be empty');
+            throw new RuntimeException('Sources must not be empty');
         }
 
         $this->clear();
@@ -85,7 +85,7 @@ class Input
                     $this->data = array_merge($this->data, $this->request->$source());
                     break;
                 default:
-                    throw new \RuntimeException('Unknown source: ' . $source);
+                    throw new RuntimeException('Unknown source: ' . $source);
             }
         }
 
@@ -104,10 +104,10 @@ class Input
      * Retains the input data using the session and returns a redirect response
      * so the user can safely resume entering the input at the referring URL.
      *
-     * @param ResponseFactory $response
+     * @param Transmitter $response
      * @return Response
      */
-    public function retry(ResponseFactory $response)
+    public function retry(Transmitter $response)
     {
         $this->session->set('input', [
             'data'   => $this->data,
