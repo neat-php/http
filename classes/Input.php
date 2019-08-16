@@ -203,7 +203,8 @@ class Input
         foreach ($filters as $key => $filter) {
             $params = explode(':', $filter);
             $filter = is_string($key) ? $key : array_shift($params);
-            $filter = $this->filters[$filter] ?? function (&$data) use ($filter, $params) {
+            $filter = $this->filters[$filter] ??
+                function (&$data) use ($filter, $params) {
                     $data = $filter($data, ...$params);
                 };
 
