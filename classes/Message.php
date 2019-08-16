@@ -149,16 +149,6 @@ abstract class Message
     }
 
     /**
-     * Set body
-     *
-     * @param StreamInterface $stream
-     */
-    protected function setBody(StreamInterface $stream)
-    {
-        $this->message = $this->message->withBody($stream);
-    }
-
-    /**
      * Get instance with body
      *
      * @param StreamInterface $body
@@ -166,21 +156,7 @@ abstract class Message
      */
     public function withBody(StreamInterface $body)
     {
-        $new = clone $this;
-        $new->setBody($body);
-
-        return $new;
-    }
-
-    /**
-     * Set header
-     *
-     * @param string $name
-     * @param string $value
-     */
-    protected function setHeader($name, $value)
-    {
-        $this->message = $this->message->withHeader($name, $value);
+        return new static($this->message->withBody($body));
     }
 
     /**
@@ -190,12 +166,9 @@ abstract class Message
      * @param string $value
      * @return static
      */
-    public function withHeader($name, $value)
+    public function withHeader(string $name, string $value)
     {
-        $new = clone $this;
-        $new->setHeader($name, $value);
-
-        return $new;
+        return new static($this->message->withHeader($name, $value));
     }
 
     /**
@@ -204,12 +177,9 @@ abstract class Message
      * @param string $name
      * @return static
      */
-    public function withoutHeader($name)
+    public function withoutHeader(string $name)
     {
-        $new          = clone $this;
-        $new->message = $this->message->withoutHeader($name);
-
-        return $new;
+        return new static($this->message->withoutHeader($name));
     }
 
     /**
@@ -220,9 +190,6 @@ abstract class Message
      */
     public function withVersion(string $version)
     {
-        $new          = clone $this;
-        $new->message = $this->message->withProtocolVersion($version);
-
-        return $new;
+        return new static($this->message->withProtocolVersion($version));
     }
 }
