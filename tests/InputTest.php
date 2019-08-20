@@ -26,14 +26,14 @@ class InputTest extends TestCase
         $psrRequest->expects($this->any())->method('getUploadedFiles')->willReturn([]);
         $psrRequest->expects($this->any())->method('getCookieParams')->willReturn([]);
 
-        $input = new Input(new Request($psrRequest), new SessionMock);
+        $input = new Input(new Request($psrRequest), new SessionMock());
         $input->load('query', 'post', 'files', 'cookie');
 
         $this->assertSame([], $input->all());
         $this->assertFalse($input->has('unknown'));
         $this->assertNull($input->get('unknown'));
         $this->assertSame([], $input->errors());
-        $this->assertSame([], $input->errors('unknown'));
+        $this->assertNull($input->error('unknown'));
         $this->assertTrue($input->valid());
         $this->assertTrue($input->valid('unknown'));
     }
@@ -47,15 +47,12 @@ class InputTest extends TestCase
         $psrUpload = $this->getMockForAbstractClass(UploadedFileInterface::class);
         /** @var ServerRequestInterface|MockObject $psrRequest */
         $psrRequest = $this->getMockForAbstractClass(ServerRequestInterface::class);
-
         $psrRequest->expects($this->any())->method('getQueryParams')->willReturn(['var' => 'query']);
         $psrRequest->expects($this->any())->method('getParsedBody')->willReturn(['var' => 'post']);
         $psrRequest->expects($this->any())->method('getUploadedFiles')->willReturn(['var' => $psrUpload]);
         $psrRequest->expects($this->any())->method('getCookieParams')->willReturn(['var' => 'cookie']);
 
-        $request = new Request($psrRequest);
-
-        $input = new Input($request, new SessionMock);
+        $input = new Input(new Request($psrRequest), new SessionMock());
         $input->load('query', 'post', 'files', 'cookie');
 
         $input->load('query');
@@ -79,7 +76,7 @@ class InputTest extends TestCase
         /** @var ServerRequestInterface|MockObject $psrRequest */
         $psrRequest = $this->getMockForAbstractClass(ServerRequestInterface::class);
 
-        $input = new Input(new Request($psrRequest), new SessionMock);
+        $input = new Input(new Request($psrRequest), new SessionMock());
         $input->set('var', 'value');
 
         $this->assertSame(['var' => 'value'], $input->all());
@@ -95,8 +92,7 @@ class InputTest extends TestCase
         /** @var ServerRequestInterface|MockObject $psrRequest */
         $psrRequest = $this->getMockForAbstractClass(ServerRequestInterface::class);
 
-        $request = new Request($psrRequest);
-        $input   = new Input($request, new SessionMock);
+        $input = new Input(new Request($psrRequest), new SessionMock());
 
         $this->expectExceptionObject(new RuntimeException('Input sources must not be empty'));
 
@@ -111,8 +107,7 @@ class InputTest extends TestCase
         /** @var ServerRequestInterface|MockObject $psrRequest */
         $psrRequest = $this->getMockForAbstractClass(ServerRequestInterface::class);
 
-        $request = new Request($psrRequest);
-        $input   = new Input($request, new SessionMock);
+        $input = new Input(new Request($psrRequest), new SessionMock());
 
         $this->expectExceptionObject(new RuntimeException('Unknown input source: internet'));
 
@@ -126,12 +121,9 @@ class InputTest extends TestCase
     {
         /** @var ServerRequestInterface|MockObject $psrRequest */
         $psrRequest = $this->getMockForAbstractClass(ServerRequestInterface::class);
-
         $psrRequest->expects($this->any())->method('getQueryParams')->willReturn(['var' => ' test ']);
 
-//        $request = new Request('GET', '/?var=%20test%20');
-        $request = new Request($psrRequest);
-        $input   = new Input($request, new SessionMock);
+        $input = new Input(new Request($psrRequest), new SessionMock());
         $input->load('query');
 
         $this->assertSame(' test ', $input->get('var'));
@@ -149,9 +141,9 @@ class InputTest extends TestCase
     public function provideCustomFilterData()
     {
         return [
-            ['test', 'test', ['Not a number']],
-            ['3', 3, ['Not an even number']],
-            ['2', 2, []],
+            ['test', 'test', 'Not a number'],
+            ['3', 3, 'Not an even number'],
+            ['2', 2, null],
         ];
     }
 
@@ -159,15 +151,14 @@ class InputTest extends TestCase
      * Test custom filter
      *
      * @dataProvider provideCustomFilterData
-     * @param string $value
-     * @param mixed  $filtered
-     * @param array  $errors
+     * @param string      $value
+     * @param mixed       $filtered
+     * @param string|null $error
      */
-    public function testCustomFilter($value, $filtered, $errors)
+    public function testCustomFilter($value, $filtered, $error)
     {
         /** @var ServerRequestInterface|MockObject $psrRequest */
         $psrRequest = $this->getMockForAbstractClass(ServerRequestInterface::class);
-
         $psrRequest->expects($this->any())->method('getQueryParams')->willReturn(['var' => $value]);
 
         $even = function (&$value) {
@@ -183,15 +174,13 @@ class InputTest extends TestCase
             return [];
         };
 
-//        $request = new Request('POST', '/', ['var' => $value]);
-        $request = new Request($psrRequest);
-        $input   = new Input($request, new SessionMock);
+        $input = new Input(new Request($psrRequest), new SessionMock());
         $input->load('query');
         $input->register('even', $even);
 
         $this->assertSame($filtered, $input->filter('var', 'even'));
-        $this->assertSame($errors, $input->errors('var'));
-        $this->assertSame(empty($errors), $input->valid('var'));
+        $this->assertSame($error, $input->error('var'));
+        $this->assertSame(!$error, $input->valid('var'));
     }
 
     /**
@@ -241,12 +230,9 @@ class InputTest extends TestCase
     {
         /** @var ServerRequestInterface|MockObject $psrRequest */
         $psrRequest = $this->getMockForAbstractClass(ServerRequestInterface::class);
-
         $psrRequest->expects($this->any())->method('getQueryParams')->willReturn(['var' => $value]);
 
-//        $request = new Request('POST', '/', ['var' => $value]);
-        $request = new Request($psrRequest);
-        $input   = new Input($request, new SessionMock);
+        $input = new Input(new Request($psrRequest), new SessionMock());
         $input->load('query');
 
         $this->assertSame($filtered, $input->$type('var'));
@@ -261,17 +247,13 @@ class InputTest extends TestCase
         $psrUpload = $this->getMockForAbstractClass(UploadedFileInterface::class);
         /** @var ServerRequestInterface|MockObject $psrRequest */
         $psrRequest = $this->getMockForAbstractClass(ServerRequestInterface::class);
-
         $psrRequest->expects($this->any())->method('getParsedBody')->willReturn(['bool' => true]);
         $psrRequest->expects($this->any())->method('getUploadedFiles')->willReturn(['upload' => $psrUpload]);
 
-        $request = new Request($psrRequest);
-
-        $input = new Input($request, new SessionMock);
+        $input = new Input(new Request($psrRequest), new SessionMock());
         $input->load('post', 'files');
 
         $this->assertNull($input->file('bool'));
-        $this->assertEquals(new Upload($psrUpload), $input->file('upload')
-        );
+        $this->assertEquals(new Upload($psrUpload), $input->file('upload'));
     }
 }

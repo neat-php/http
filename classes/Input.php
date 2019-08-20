@@ -27,7 +27,7 @@ class Input
     protected $filters = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $errors = [];
 
@@ -116,7 +116,7 @@ class Input
      * @param string $var
      * @param mixed  $value
      */
-    public function default($var, $value)
+    public function default(string $var, $value)
     {
         if (!isset($this->data[$var])) {
             $this->data[$var] = $value;
@@ -137,7 +137,7 @@ class Input
      * @param string $var
      * @return bool
      */
-    public function has($var)
+    public function has(string $var)
     {
         return array_key_exists($var, $this->data);
     }
@@ -148,7 +148,7 @@ class Input
      * @param string $var
      * @return mixed
      */
-    public function get($var)
+    public function get(string $var)
     {
         return $this->data[$var] ?? null;
     }
@@ -159,7 +159,7 @@ class Input
      * @param string $var
      * @param mixed  $value
      */
-    public function set($var, $value)
+    public function set(string $var, $value)
     {
         $this->data[$var] = $value;
     }
@@ -170,7 +170,7 @@ class Input
      * @param string   $name
      * @param callable $filter
      */
-    public function register($name, $filter)
+    public function register(string $name, callable $filter)
     {
         $this->filters[$name] = $filter;
     }
@@ -201,9 +201,8 @@ class Input
                     $data = $filter($data, ...$params);
                 };
 
-            $errors = $filter($value, ...$params);
-            if ($errors) {
-                $this->errors[$var] = $errors;
+            if ($error = $filter($value, ...$params)) {
+                $this->errors[$var] = is_array($error) ? current($error) : $error;
                 break;
             }
             if ($value === null) {
@@ -285,16 +284,22 @@ class Input
     /**
      * Get errors
      *
-     * @param string $field (optional)
      * @return string[]
      */
-    public function errors($field = null)
+    public function errors(): array
     {
-        if ($field) {
-            return $this->errors[$field] ?? [];
-        }
+        return $this->errors;
+    }
 
-        return array_merge([], ...array_values($this->errors));
+    /**
+     * Get error for a given field
+     *
+     * @param string $field
+     * @return string|null
+     */
+    public function error(string $field)
+    {
+        return $this->errors[$field] ?? null;
     }
 
     /**
@@ -303,8 +308,12 @@ class Input
      * @param string $field (optional)
      * @return bool
      */
-    public function valid($field = null)
+    public function valid(string $field = null): bool
     {
-        return empty($this->errors($field));
+        if ($field) {
+            return !isset($this->errors[$field]);
+        }
+
+        return empty($this->errors);
     }
 }
