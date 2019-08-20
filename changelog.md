@@ -6,7 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Add string type types to withHeader and withoutHeader method signatures.
+- Store and fetch only one error per input field.
+- Add string type hints to withHeader and withoutHeader method signatures.
+- Add type hints to Input class method signatures.
 - Refactor internal Message (Request and Response base class) implementation.
 
 ### Fixed
