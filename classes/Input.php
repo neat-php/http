@@ -19,7 +19,7 @@ class Input
     /**
      * @var array
      */
-    protected $data;
+    protected $data = [];
 
     /**
      * @var array
@@ -50,7 +50,6 @@ class Input
      */
     public function init()
     {
-        $this->load('query', 'post', 'files', 'cookie');
     }
 
     /**
@@ -72,28 +71,22 @@ class Input
     public function load(...$sources)
     {
         if (!$sources) {
-            throw new RuntimeException('Sources must not be empty');
+            throw new RuntimeException('Input sources must not be empty');
         }
 
         $this->clear();
         foreach ($sources as $source) {
-            switch ($source) {
-                case 'query':
-                case 'post':
-                case 'files':
-                case 'cookie':
-                    $this->data = array_merge($this->data, $this->request->$source());
-                    break;
-                default:
-                    throw new RuntimeException('Unknown source: ' . $source);
+            if (!in_array($source, ['query', 'post', 'files', 'cookie'])) {
+                throw new RuntimeException('Unknown input source: ' . $source);
             }
+            $this->data = array_merge($this->data, $this->request->$source());
         }
 
-        if ($session = $this->session->get('input')) {
+        if ($input = $this->session->get('input')) {
             $this->session->unset('input');
             if (!$this->data) {
-                $this->data   = $session['data'] ?? [];
-                $this->errors = $session['errors'] ?? [];
+                $this->data   = $input['data'] ?? [];
+                $this->errors = $input['errors'] ?? [];
             }
         }
     }
