@@ -39,7 +39,7 @@ class Redirect
      */
     public function back(Request $request): Response
     {
-        $url = $request->header('HTTP_REFERER');
+        $url = $request->header('Referer');
 
         return $this->to($url->value());
     }
