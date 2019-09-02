@@ -2,6 +2,8 @@
 
 namespace Neat\Http\Test;
 
+use Neat\Http\Exception\MethodNotAllowedException;
+use Neat\Http\Exception\RouteNotFoundException;
 use Neat\Http\Router;
 use PHPUnit\Framework\TestCase;
 
@@ -56,21 +58,21 @@ class RouterTest extends TestCase
     public function provideExceptionData()
     {
         return [
-            [404, 'GET', '/hello-world'],
-            [405, 'POST', '/test'],
-            [404, 'GET', '/test/hello-world'],
+            [RouteNotFoundException::class, 'GET', '/hello-world'],
+            [MethodNotAllowedException::class, 'POST', '/test'],
+            [RouteNotFoundException::class, 'GET', '/test/hello-world'],
         ];
     }
 
     /**
      * @dataProvider provideExceptionData
-     * @param int    $code
+     * @param string $exception
      * @param string $method
      * @param string $path
      */
-    public function testExceptions(int $code, string $method, string $path)
+    public function testExceptions(string $exception, string $method, string $path)
     {
-        $this->expectExceptionCode($code);
+        $this->expectException($exception);
         $this->router()->match($method, $path);
     }
 }

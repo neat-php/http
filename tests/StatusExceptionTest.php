@@ -3,7 +3,7 @@
 namespace Neat\Http\Test;
 
 use PHPUnit\Framework\TestCase;
-use Neat\Http\StatusException;
+use Neat\Http\Exception\StatusException;
 use Neat\Http\Status;
 
 class StatusExceptionTest extends TestCase

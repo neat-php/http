@@ -2,6 +2,10 @@
 
 namespace Neat\Http;
 
+use Neat\Http\Exception\MethodNotAllowedException;
+use Neat\Http\Exception\RouteNotFoundException;
+use Neat\Http\Exception\StatusException;
+
 /**
  * Router
  */
@@ -325,12 +329,12 @@ class Router
         $parameters = [];
         $map        = $this->matchPath($this->split($path), $parameters);
         if (!$map || !$map->handlers) {
-            throw new StatusException(404);
+            throw new RouteNotFoundException();
         }
 
         $handler = $map->matchMethod(strtoupper($method));
         if (!$handler) {
-            throw new StatusException(405);
+            throw new MethodNotAllowedException();
         }
 
         return $handler;

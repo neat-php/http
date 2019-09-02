@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Neat\Http;
+namespace Neat\Http\Exception;
 
+use Neat\Http\Status;
 use RuntimeException;
 use Throwable;
 

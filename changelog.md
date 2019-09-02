@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2019-09-02
+### Changed
+- Add RouteNotFound and MethodNotAllowed exceptions.
+- Router match now throws RouteNotFound or MethodNotAllowed exceptions instead of StatusException.
+- Moved StatusException to exception namespace. 
+
 ## [0.3.1] - 2019-08-20
 ### Fixed
 - Redirect back now uses the Referer header as it's supposed to.
