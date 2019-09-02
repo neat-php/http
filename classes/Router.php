@@ -4,7 +4,7 @@ namespace Neat\Http;
 
 use Neat\Http\Exception\MethodNotAllowedException;
 use Neat\Http\Exception\RouteNotFoundException;
-use Neat\Http\Exception\StatusException;
+use RuntimeException;
 
 /**
  * Router
@@ -322,7 +322,7 @@ class Router
      * @param string $path
      * @param array  $parameters
      * @return callable
-     * @throws StatusException
+     * @throws RuntimeException
      */
     public function match($method, $path, array &$parameters = null)
     {
