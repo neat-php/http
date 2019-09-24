@@ -2,7 +2,7 @@
 
 namespace Neat\Http;
 
-interface Receiver
+interface Receiver extends ReceiverInterface
 {
     /**
      * @return Request
