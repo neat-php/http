@@ -4,7 +4,7 @@ namespace Neat\Http;
 
 use Neat\Http\Response\Redirect;
 
-interface Transmitter extends TransmitterInterface
+interface Transmitter
 {
     /**
      * @param string $html
