@@ -6,11 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2019-09-24
+### Fixed
+- ReceiverInterface and TransmitterInterface break BC
+
 ## [0.4.0] - 2019-09-02
 ### Changed
 - Add RouteNotFound and MethodNotAllowed exceptions.
 - Router match now throws RouteNotFound or MethodNotAllowed exceptions instead of StatusException.
 - Moved StatusException to exception namespace. 
+
+## [0.3.2] - 2019-09-24
+### Fixed
+- ReceiverInterface and TransmitterInterface break BC
 
 ## [0.3.1] - 2019-08-20
 ### Fixed
@@ -27,6 +35,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed error in Url->withQueryParameters().
 - Fixed broken ResponseFactory reference.
 
+## [0.2.4] - 2019-09-24
+### Fixed
+- ReceiverInterface and TransmitterInterface break BC
+
 ## [0.2.3] - 2019-08-15
 ### Changed
 - Rename ReceiverInterface to Receiver and TransmitterInterface to Transmitter.
@@ -37,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.2] - 2019-08-02
 ### Added
 - Added Url->isSecure(): bool method.
- 
+
 ### Fixed
 - Upload->move() doesn't throw Runtime exceptions when it succeeds.
 
