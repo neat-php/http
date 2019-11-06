@@ -119,7 +119,7 @@ class Router
      */
     public function get($url, $handler)
     {
-        $this->add('GET', $this->split($url), $handler);
+        $this->map($this->split($url))->method('GET', $handler);
     }
 
     /**
@@ -130,7 +130,7 @@ class Router
      */
     public function post($url, $handler)
     {
-        $this->add('POST', $this->split($url), $handler);
+        $this->map($this->split($url))->method('POST', $handler);
     }
 
     /**
@@ -141,7 +141,7 @@ class Router
      */
     public function put($url, $handler)
     {
-        $this->add('PUT', $this->split($url), $handler);
+        $this->map($this->split($url))->method('PUT', $handler);
     }
 
     /**
@@ -152,7 +152,7 @@ class Router
      */
     public function patch($url, $handler)
     {
-        $this->add('PATCH', $this->split($url), $handler);
+        $this->map($this->split($url))->method('PATCH', $handler);
     }
 
     /**
@@ -163,7 +163,7 @@ class Router
      */
     public function delete($url, $handler)
     {
-        $this->add('DELETE', $this->split($url), $handler);
+        $this->map($this->split($url))->method('DELETE', $handler);
     }
 
     /**
@@ -174,7 +174,7 @@ class Router
      */
     public function any($url, $handler)
     {
-        $this->add('ANY', $this->split($url), $handler);
+        $this->map($this->split($url))->method('ANY', $handler);
     }
 
     /**
@@ -211,14 +211,19 @@ class Router
         return array_filter(explode('/', $path));
     }
 
+    /**
+     * Map path segments
+     *
+     * @param array $segments
+     * @return Router
+     */
     private function map(array $segments)
     {
-        if (!$segments) {
+        if (!$segment = array_shift($segments)) {
             return $this;
         }
 
-        $segment = array_shift($segments);
-        $map     = $this->literals[$segment]
+        $map = $this->literals[$segment]
             ?? $this->variables[$segment]
             ?? ($segment == '*' ? $this->wildcard : null);
 
@@ -237,15 +242,14 @@ class Router
     }
 
     /**
-     * Add route mapping
+     * Set method handler
      *
      * @param string   $method
-     * @param array    $segments
      * @param callable $handler
      */
-    private function add($method, array $segments, $handler)
+    private function method(string $method, $handler)
     {
-        $this->map($segments)->handlers[$method] = $handler;
+        $this->handlers[$method] = $handler;
     }
 
     /**
@@ -301,6 +305,7 @@ class Router
         if ($this->wildcard) {
             array_unshift($segments, $segment);
             $arguments = $segments;
+
             return $this->wildcard;
         }
 
