@@ -170,11 +170,23 @@ class Router
      * Add a controller route
      *
      * @param string $url
+     * @param string $handler
+     */
+    public function any($url, $handler)
+    {
+        $this->add('ANY', $this->split($url), $handler);
+    }
+
+    /**
+     * Add a controller route
+     *
+     * @param string $url
      * @param string $class
+     * @deprecated Use any($url, $handler) instead.
      */
     public function controller($url, $class)
     {
-        $this->add('ANY', $this->split($url), $class);
+        $this->any($url, $class);
     }
 
     /**
@@ -196,9 +208,7 @@ class Router
      */
     private function split($path)
     {
-        $path = trim($path, '/');
-
-        return $path ? explode('/', trim($path, '/')) : [];
+        return array_filter(explode('/', $path));
     }
 
     private function map(array $segments)
