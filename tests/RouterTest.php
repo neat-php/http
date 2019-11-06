@@ -28,7 +28,7 @@ class RouterTest extends TestCase
         $router->patch('/test/test', 'patch-test-test');
         $router->delete('/test/test', 'delete-test-test');
         $router->get('/arg/*', 'test-arg');
-        $router->controller('/any', 'any-test');
+        $router->any('/any', 'any-test');
 
         return $router;
     }

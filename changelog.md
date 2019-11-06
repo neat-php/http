@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Router path segment normalization.
 
+### Added
+- Router any method
+
+### Deprecated
+- Router controller method (will be replaced with proper controller support).
+
 ## [0.4.1] - 2019-09-24
 ### Fixed
 - ReceiverInterface and TransmitterInterface break BC
