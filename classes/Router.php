@@ -196,9 +196,7 @@ class Router
      */
     private function split($path)
     {
-        $path = trim($path, '/');
-
-        return $path ? explode('/', trim($path, '/')) : [];
+        return array_filter(explode('/', $path));
     }
 
     private function map(array $segments)

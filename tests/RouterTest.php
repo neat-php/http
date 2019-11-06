@@ -55,6 +55,35 @@ class RouterTest extends TestCase
         $this->assertSame('any-test', $router->match('POST', '/any'));
     }
 
+    public function testEmptyPathSegments()
+    {
+        $router = new Router();
+        $router->get('/a/b', 'test-a-b');
+        $router->get('/c//d', 'test-c-d');
+        $router->get('e', 'test-e');
+        $router->get('', 'test-get-root');
+        $router->post('/', 'test-post-root');
+
+        $this->assertSame('test-a-b', $router->match('GET', 'a/b'));
+        $this->assertSame('test-a-b', $router->match('GET', '/a//b'));
+        $this->assertSame('test-a-b', $router->match('GET', '//a/b'));
+        $this->assertSame('test-a-b', $router->match('GET', '//a//b'));
+
+        $this->assertSame('test-c-d', $router->match('GET', 'c/d'));
+        $this->assertSame('test-c-d', $router->match('GET', '/c//d'));
+        $this->assertSame('test-c-d', $router->match('GET', '//c/d'));
+        $this->assertSame('test-c-d', $router->match('GET', '//c//d'));
+
+        $this->assertSame('test-e', $router->match('GET', 'e'));
+        $this->assertSame('test-e', $router->match('GET', '/e'));
+        $this->assertSame('test-e', $router->match('GET', '//e'));
+
+        $this->assertSame('test-get-root', $router->match('GET', ''));
+        $this->assertSame('test-get-root', $router->match('GET', '/'));
+        $this->assertSame('test-post-root', $router->match('POST', ''));
+        $this->assertSame('test-post-root', $router->match('POST', '/'));
+    }
+
     public function provideExceptionData()
     {
         return [
