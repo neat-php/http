@@ -117,7 +117,7 @@ class Router
      * @param string   $url
      * @param callable $handler
      */
-    public function get($url, $handler)
+    public function get(string $url, $handler)
     {
         $this->map($this->split($url))->method('GET', $handler);
     }
@@ -128,7 +128,7 @@ class Router
      * @param string   $url
      * @param callable $handler
      */
-    public function post($url, $handler)
+    public function post(string $url, $handler)
     {
         $this->map($this->split($url))->method('POST', $handler);
     }
@@ -139,7 +139,7 @@ class Router
      * @param string   $url
      * @param callable $handler
      */
-    public function put($url, $handler)
+    public function put(string $url, $handler)
     {
         $this->map($this->split($url))->method('PUT', $handler);
     }
@@ -150,7 +150,7 @@ class Router
      * @param string   $url
      * @param callable $handler
      */
-    public function patch($url, $handler)
+    public function patch(string $url, $handler)
     {
         $this->map($this->split($url))->method('PATCH', $handler);
     }
@@ -161,7 +161,7 @@ class Router
      * @param string   $url
      * @param callable $handler
      */
-    public function delete($url, $handler)
+    public function delete(string $url, $handler)
     {
         $this->map($this->split($url))->method('DELETE', $handler);
     }
@@ -169,10 +169,10 @@ class Router
     /**
      * Add a controller route
      *
-     * @param string $url
-     * @param string $handler
+     * @param string   $url
+     * @param callable $handler
      */
-    public function any($url, $handler)
+    public function any(string $url, $handler)
     {
         $this->map($this->split($url))->method('ANY', $handler);
     }
@@ -184,7 +184,7 @@ class Router
      * @param string $class
      * @deprecated Use any($url, $handler) instead.
      */
-    public function controller($url, $class)
+    public function controller(string $url, string $class)
     {
         $this->any($url, $class);
     }
@@ -195,7 +195,7 @@ class Router
      * @param string $url
      * @return Router
      */
-    public function in($url): self
+    public function in(string $url): Router
     {
         return $this->map($this->split($url));
     }
@@ -206,7 +206,7 @@ class Router
      * @param string $path
      * @return array
      */
-    private function split($path)
+    private function split(string $path): array
     {
         return array_filter(explode('/', $path));
     }
@@ -217,7 +217,7 @@ class Router
      * @param array $segments
      * @return Router
      */
-    private function map(array $segments)
+    private function map(array $segments): Router
     {
         if (!$segment = array_shift($segments)) {
             return $this;
@@ -258,7 +258,7 @@ class Router
      * @param string $segment
      * @return bool
      */
-    private function matchesSegment($segment)
+    private function matchesSegment(string $segment): bool
     {
         if ($this->isWildcard()) {
             return true;
@@ -276,7 +276,7 @@ class Router
      *
      * @param array $segments
      * @param array $arguments
-     * @return Router
+     * @return Router|null
      */
     private function matchPath(array $segments, &$arguments = [])
     {
@@ -316,9 +316,9 @@ class Router
      * Match method
      *
      * @param string $method
-     * @return callable
+     * @return callable|null
      */
-    private function matchMethod($method)
+    private function matchMethod(string $method)
     {
         return $this->handlers[$method]
             ?? $this->handlers['ANY']
@@ -334,7 +334,7 @@ class Router
      * @return callable
      * @throws RuntimeException
      */
-    public function match($method, $path, array &$parameters = null)
+    public function match(string $method, string $path, array &$parameters = null)
     {
         $parameters = [];
 
