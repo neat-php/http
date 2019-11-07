@@ -62,41 +62,11 @@ class Router
     }
 
     /**
-     * Get segment
-     *
-     * @return null|string
-     */
-    public function segment()
-    {
-        return $this->segment;
-    }
-
-    /**
-     * Is root segment?
-     *
-     * @return bool
-     */
-    public function isRoot()
-    {
-        return $this->segment === null;
-    }
-
-    /**
-     * Is literal segment?
-     *
-     * @return bool
-     */
-    public function isLiteral()
-    {
-        return $this->segment[0] != '$' && $this->segment != '*';
-    }
-
-    /**
      * Is variable segment?
      *
      * @return bool
      */
-    public function isVariable()
+    private function isVariable(): bool
     {
         return $this->segment && $this->segment[0] == '$';
     }
@@ -106,7 +76,7 @@ class Router
      *
      * @return bool
      */
-    public function isWildcard()
+    private function isWildcard(): bool
     {
         return $this->segment == '*';
     }

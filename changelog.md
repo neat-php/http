@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - ReceiverInterface and TransmitterInterface.
 - Router controller method.
+- Router segment, isRoot, isLiteral, isVariable, isWildcard methods.
 
 ## [0.4.2]
 ### Fixed
