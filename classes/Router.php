@@ -29,7 +29,7 @@ class Router
     /**
      * @var callable[]
      */
-    private $handlers;
+    private $handlers = [];
 
     /**
      * @var Router[]
@@ -320,14 +320,9 @@ class Router
      */
     private function matchMethod($method)
     {
-        if (isset($this->handlers[$method])) {
-            return $this->handlers[$method];
-        }
-        if (isset($this->handlers['ANY'])) {
-            return $this->handlers['ANY'];
-        }
-
-        return null;
+        return $this->handlers[$method]
+            ?? $this->handlers['ANY']
+            ?? null;
     }
 
     /**
@@ -342,8 +337,9 @@ class Router
     public function match($method, $path, array &$parameters = null)
     {
         $parameters = [];
-        $map        = $this->matchPath($this->split($path), $parameters);
-        if (!$map || !$map->handlers) {
+
+        $map = $this->matchPath($this->split($path), $parameters);
+        if (!$map) {
             throw new RouteNotFoundException();
         }
 

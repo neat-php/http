@@ -55,6 +55,26 @@ class RouterTest extends TestCase
         $this->assertSame('any-test', $router->match('POST', '/any'));
     }
 
+    public function testAnyVersusGet()
+    {
+        $router = new Router();
+        $router->any('/', 'test-any');
+        $router->get('/', 'test-get');
+
+        $this->assertSame('test-get', $router->match('GET', '/'));
+        $this->assertSame('test-any', $router->match('POST', '/'));
+    }
+
+    public function testGetVersusAny()
+    {
+        $router = new Router();
+        $router->get('/', 'test-get');
+        $router->any('/', 'test-any');
+
+        $this->assertSame('test-get', $router->match('GET', '/'));
+        $this->assertSame('test-any', $router->match('POST', '/'));
+    }
+
     public function testEmptyPathSegments()
     {
         $router = new Router();
