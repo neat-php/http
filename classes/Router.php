@@ -287,7 +287,7 @@ class Router
         $segment = array_shift($segments);
         if (isset($this->literals[$segment])) {
             $match = $this->literals[$segment]->matchPath($segments, $arguments);
-            if ($match) {
+            if ($match && $match->handlers) {
                 return $match;
             }
         }
@@ -296,13 +296,13 @@ class Router
                 continue;
             }
             $match = $variableMap->matchPath($segments, $arguments);
-            if ($match) {
+            if ($match && $match->handlers) {
                 $arguments[$variableMap->name] = $segment;
 
                 return $match;
             }
         }
-        if ($this->wildcard) {
+        if ($this->wildcard && $this->wildcard->handlers) {
             array_unshift($segments, $segment);
             $arguments = $segments;
 

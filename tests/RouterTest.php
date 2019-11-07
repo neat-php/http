@@ -75,6 +75,17 @@ class RouterTest extends TestCase
         $this->assertSame('test-any', $router->match('POST', '/'));
     }
 
+    public function testWildcardVersusPartialMatch()
+    {
+        $router = new Router();
+        $router->get('/partial/path', 'test-partial-path');
+        $router->get('/*', 'test-wildcard');
+
+        $this->assertSame('test-wildcard', $router->match('GET', '/partial/'));
+        $this->assertSame('test-wildcard', $router->match('GET', '/partial'));
+        $this->assertSame('test-wildcard', $router->match('GET', 'partial'));
+    }
+
     public function testEmptyPathSegments()
     {
         $router = new Router();
