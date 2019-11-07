@@ -178,18 +178,6 @@ class Router
     }
 
     /**
-     * Add a controller route
-     *
-     * @param string $url
-     * @param string $class
-     * @deprecated Use any($url, $handler) instead.
-     */
-    public function controller(string $url, string $class)
-    {
-        $this->any($url, $class);
-    }
-
-    /**
      * Get a sub-router
      *
      * @param string $url
@@ -253,25 +241,6 @@ class Router
     }
 
     /**
-     * Matches segment?
-     *
-     * @param string $segment
-     * @return bool
-     */
-    private function matchesSegment(string $segment): bool
-    {
-        if ($this->isWildcard()) {
-            return true;
-        } elseif ($this->isVariable() && (!$this->expression || preg_match($this->expression, $segment))) {
-            return true;
-        } elseif ($this->isLiteral() && $this->segment == $segment) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Match path
      *
      * @param array $segments
@@ -291,13 +260,13 @@ class Router
                 return $match;
             }
         }
-        foreach ($this->variables as $variableMap) {
-            if (!$variableMap->matchesSegment($segment)) {
+        foreach ($this->variables as $variable) {
+            if ($variable->expression && !preg_match($variable->expression, $segment)) {
                 continue;
             }
-            $match = $variableMap->matchPath($segments, $arguments);
+            $match = $variable->matchPath($segments, $arguments);
             if ($match && $match->handlers) {
-                $arguments[$variableMap->name] = $segment;
+                $arguments[$variable->name] = $segment;
 
                 return $match;
             }

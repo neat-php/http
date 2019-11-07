@@ -9,21 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MethodNotAllowedException during Router match when a wildcard route exists.
 
 ### Removed
-- ReceiverInterface and TransmitterInterface
+- ReceiverInterface and TransmitterInterface.
+- Router controller method.
 
 ## [0.4.2]
 ### Fixed
 - Router path segment normalization.
 
 ### Added
-- Router any method
+- Router any method.
 
 ### Deprecated
 - Router controller method (will be replaced with proper controller support).
 
 ## [0.4.1] - 2019-09-24
 ### Fixed
-- ReceiverInterface and TransmitterInterface break BC
+- ReceiverInterface and TransmitterInterface break BC.
 
 ## [0.4.0] - 2019-09-02
 ### Changed
@@ -33,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.2] - 2019-09-24
 ### Fixed
-- ReceiverInterface and TransmitterInterface break BC
+- ReceiverInterface and TransmitterInterface break BC.
 
 ## [0.3.1] - 2019-08-20
 ### Fixed
@@ -52,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.4] - 2019-09-24
 ### Fixed
-- ReceiverInterface and TransmitterInterface break BC
+- ReceiverInterface and TransmitterInterface break BC.
 
 ## [0.2.3] - 2019-08-15
 ### Changed
