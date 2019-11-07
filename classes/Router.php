@@ -279,12 +279,12 @@ class Router
 
         $map = $this->matchPath($this->split($path), $parameters);
         if (!$map) {
-            throw new RouteNotFoundException();
+            throw new RouteNotFoundException('Route not found');
         }
 
         $handler = $map->matchMethod(strtoupper($method));
         if (!$handler) {
-            throw new MethodNotAllowedException();
+            throw new MethodNotAllowedException('Method not allowed');
         }
 
         return $handler;

@@ -2,6 +2,7 @@
 
 namespace Neat\Http\Test;
 
+use Exception;
 use Neat\Http\Exception\MethodNotAllowedException;
 use Neat\Http\Exception\RouteNotFoundException;
 use Neat\Http\Router;
@@ -115,24 +116,27 @@ class RouterTest extends TestCase
         $this->assertSame('test-post-root', $router->match('POST', '/'));
     }
 
-    public function provideExceptionData()
+    /**
+     * @return array
+     */
+    public function provideExceptionData(): array
     {
         return [
-            [RouteNotFoundException::class, 'GET', '/hello-world'],
-            [MethodNotAllowedException::class, 'POST', '/test'],
-            [RouteNotFoundException::class, 'GET', '/test/hello-world'],
+            [new RouteNotFoundException('Route not found'), 'GET', '/hello-world'],
+            [new MethodNotAllowedException('Method not allowed'), 'POST', '/test'],
+            [new RouteNotFoundException('Route not found'), 'GET', '/test/hello-world'],
         ];
     }
 
     /**
      * @dataProvider provideExceptionData
-     * @param string $exception
+     * @param Exception $exception
      * @param string $method
      * @param string $path
      */
-    public function testExceptions(string $exception, string $method, string $path)
+    public function testExceptions(Exception $exception, string $method, string $path)
     {
-        $this->expectException($exception);
+        $this->expectExceptionObject($exception);
         $this->router()->match($method, $path);
     }
 }
