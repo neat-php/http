@@ -108,80 +108,58 @@ class UploadTest extends TestCase
     }
 
     /**
-     * Test moving the uploaded file twice
+     * Test the (deprecated) moved getter
      */
-    public function testMoveTwice()
+    public function testMoved()
     {
-        $this->addToAssertionCount(1);
-        return;
+        /** @var StreamInterface|MockObject $psrStream */
+        $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
+        /** @var UploadedFileInterface|MockObject $psrUpload */
+        $psrUpload = $this->getMockForAbstractClass(UploadedFileInterface::class);
+        $psrUpload->expects($this->any())->method('getStream')->willReturn($psrStream);
 
-        $move = $this->createPartialMock(\stdClass::class, ['__invoke']);
-        $move
-            ->expects(self::once())
-            ->method('__invoke')
-            ->with(__DIR__ . '/test.txt', __DIR__ . '/destination1.txt')
-            ->willReturn(true);
+        $psrStream->expects($this->at(0))->method('isReadable')->willReturn(true);
+        $psrStream->expects($this->at(1))->method('isReadable')->willReturn(false);
 
-        $file = new Upload(__DIR__ . '/test.txt', 'test.txt', 'text/plain', UPLOAD_ERR_OK, $move);
-        $file->moveTo(__DIR__ . '/destination1.txt');
-        $this->assertSame(__DIR__ . '/destination1.txt', $file->path());
-
-        try {
-            $this->expectExceptionObject(new RuntimeException('Uploaded file already moved'));
-            $file->moveTo(__DIR__ . '/destination2.txt');
-        } finally {
-            $this->assertSame(__DIR__ . '/destination1.txt', $file->path());
-        }
+        $file = new Upload($psrUpload);
+        $this->assertFalse(@$file->moved());
+        $this->assertTrue(@$file->moved());
     }
 
     /**
-     * Test moving an invalid file upload
+     * Test moving the uploaded file twice
      */
     public function testMoveInvalid()
     {
-        $this->addToAssertionCount(1);
-        return;
+        /** @var UploadedFileInterface|MockObject $psrUpload */
+        $psrUpload = $this->getMockForAbstractClass(UploadedFileInterface::class);
+        $psrUpload
+            ->expects($this->once())
+            ->method('getError')
+            ->willReturn(UPLOAD_ERR_NO_FILE);
 
-        $move = $this->createPartialMock(\stdClass::class, ['__invoke']);
-        $move
-            ->expects(self::never())
-            ->method('__invoke');
+        $file = new Upload($psrUpload);
 
-        $file = new Upload(__DIR__ . '/invalid.txt', 'test.txt', 'text/plain', UPLOAD_ERR_NO_FILE, $move);
-
-        $this->assertFalse($file->moved());
-
-        try {
-            $this->expectExceptionObject(new RuntimeException('Cannot move invalid file upload'));
-            $file->moveTo(__DIR__ . '/destination.txt');
-        } finally {
-            $this->assertSame(__DIR__ . '/invalid.txt', $file->path());
-        }
+        $this->expectExceptionObject(new RuntimeException('Cannot move invalid file upload'));
+        $file->moveTo(__DIR__ . '/destination.txt');
     }
 
     /**
-     * Test uploaded file moving failure
+     * Test moving the uploaded file twice
      */
-    public function testMoveFailed()
+    public function testMoveUnreadable()
     {
-        $this->addToAssertionCount(1);
-        return;
+        /** @var StreamInterface|MockObject $psrStream */
+        $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
+        /** @var UploadedFileInterface|MockObject $psrUpload */
+        $psrUpload = $this->getMockForAbstractClass(UploadedFileInterface::class);
+        $psrUpload->expects($this->at(0))->method('getError')->willReturn(UPLOAD_ERR_OK);
+        $psrUpload->expects($this->at(1))->method('getStream')->willReturn($psrStream);
+        $psrStream->expects($this->at(0))->method('isReadable')->willReturn(false);
 
-        $move = $this->createPartialMock(\stdClass::class, ['__invoke']);
-        $move
-            ->expects(self::once())
-            ->method('__invoke')
-            ->with(__DIR__ . '/test.txt', __DIR__ . '/destination.txt')
-            ->willReturn(false);
+        $file = new Upload($psrUpload);
 
-        $file = new Upload(__DIR__ . '/test.txt', 'test.txt', 'text/plain', UPLOAD_ERR_OK, $move);
-        $this->assertTrue($file->ok());
-
-        try {
-            $this->expectExceptionObject(new RuntimeException('Failed moving uploaded file'));
-            $file->moveTo(__DIR__ . '/destination.txt');
-        } finally {
-            $this->assertSame(__DIR__ . '/test.txt', $file->path());
-        }
+        $this->expectExceptionObject(new RuntimeException('Cannot move unreadable file upload'));
+        $file->moveTo(__DIR__ . '/destination.txt');
     }
 }

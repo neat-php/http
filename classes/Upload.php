@@ -39,7 +39,7 @@ class Upload
             throw new RuntimeException('Cannot move invalid file upload');
         }
         if (!$this->file->getStream()->isReadable()) {
-            throw new RuntimeException('Uploaded file already moved');
+            throw new RuntimeException('Cannot move unreadable file upload');
         }
         $this->file->moveTo($destination);
     }
@@ -54,7 +54,7 @@ class Upload
     {
         trigger_error('Method:' . __METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 
-        return false;
+        return !$this->file->getStream()->isReadable();
     }
 
     /**
