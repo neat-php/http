@@ -7,14 +7,10 @@ namespace Neat\Http;
  */
 class Header
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $value;
 
     /**

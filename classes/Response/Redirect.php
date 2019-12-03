@@ -7,13 +7,12 @@ use Neat\Http\Response;
 
 class Redirect
 {
-    /**
-     * @var Response
-     */
+    /** @var Response */
     private $response;
 
     /**
-     * Redirect constructor.
+     * Redirect constructor
+     *
      * @param Response $response
      */
     public function __construct(Response $response)

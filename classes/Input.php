@@ -6,29 +6,19 @@ use RuntimeException;
 
 class Input
 {
-    /**
-     * @var Request
-     */
+    /** @var Request */
     protected $request;
 
-    /**
-     * @var Session
-     */
+    /** @var Session */
     protected $session;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $data = [];
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $filters = [];
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     protected $errors = [];
 
     /**

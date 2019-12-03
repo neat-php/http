@@ -5,7 +5,7 @@ namespace Neat\Http\Header;
 use Neat\Http\Message;
 
 /**
- * Class ContentType
+ * HTTP ContentType header
  *
  * @url https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
  *
@@ -20,30 +20,23 @@ use Neat\Http\Message;
  * Syntax
  * Content-Type: text/html; charset=utf-8
  * Content-Type: multipart/form-data; boundary=something
- *
- * @package Neat\Http\Header
  */
 class ContentType implements Header
 {
     const HEADER = 'Content-Type';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $value;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $charset;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $boundary;
 
     /**
-     * ContentType constructor.
+     * ContentType constructor
+     *
      * @param string      $value
      * @param string|null $charset
      * @param string|null $boundary

@@ -7,9 +7,7 @@ namespace Neat\Http;
  */
 class Session
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $session;
 
     /**

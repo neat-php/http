@@ -5,7 +5,7 @@ namespace Neat\Http\Header;
 use Neat\Http\Message;
 
 /**
- * Class Authorization
+ * HTTP Authorization header
  *
  * @url https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization
  *
@@ -14,8 +14,6 @@ use Neat\Http\Message;
  *
  * Syntax
  * Authorization: <type> <credentials>
- *
- * @package Neat\Http\Header
  */
 class Authorization implements Header
 {
@@ -23,21 +21,18 @@ class Authorization implements Header
 
     const TYPES = [self::TYPE_BASIC, self::TYPE_BEARER];
 
-    const TYPE_BASIC  = 'Basic';
+    const TYPE_BASIC = 'Basic';
     const TYPE_BEARER = 'Bearer';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $type;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $credentials;
 
     /**
-     * Authorization constructor.
+     * Authorization constructor
+     *
      * @param string $type
      * @param string $credentials
      */

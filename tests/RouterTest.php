@@ -131,8 +131,8 @@ class RouterTest extends TestCase
     /**
      * @dataProvider provideExceptionData
      * @param Exception $exception
-     * @param string $method
-     * @param string $path
+     * @param string    $method
+     * @param string    $path
      */
     public function testExceptions(Exception $exception, string $method, string $path)
     {

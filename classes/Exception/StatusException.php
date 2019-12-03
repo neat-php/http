@@ -8,16 +8,14 @@ use Throwable;
 
 class StatusException extends RuntimeException
 {
-    /**
-     * @var Status
-     */
+    /** @var Status */
     protected $status;
 
     /**
      * Exception constructor
      *
      * @param int       $code
-     * @param string    $reason (optional)
+     * @param string    $reason   (optional)
      * @param Throwable $previous (optional)
      */
     public function __construct(int $code, string $reason = null, Throwable $previous = null)

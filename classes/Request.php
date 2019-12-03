@@ -10,9 +10,7 @@ use Psr\Http\Message\UploadedFileInterface;
  */
 class Request extends Message
 {
-    /**
-     * @var ServerRequestInterface
-     */
+    /** @var ServerRequestInterface */
     protected $message;
 
     /**

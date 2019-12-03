@@ -11,39 +11,25 @@ use RuntimeException;
  */
 class Router
 {
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $segment;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $expression;
 
-    /**
-     * @var callable[]
-     */
+    /** @var callable[] */
     private $handlers = [];
 
-    /**
-     * @var Router[]
-     */
+    /** @var Router[] */
     private $literals = [];
 
-    /**
-     * @var Router[]
-     */
+    /** @var Router[] */
     private $variables = [];
 
-    /**
-     * @var Router|null
-     */
+    /** @var Router|null */
     private $wildcard;
 
     /**

@@ -40,7 +40,7 @@ class MessageTest extends TestCase
         $this->assertNull($message->header('X-Test'));
 
         $this->assertSame("\r\n", Message::EOL);
-        $this->assertSame("\r\n", (string)$message);
+        $this->assertSame("\r\n", (string) $message);
     }
 
     /**
@@ -91,7 +91,7 @@ class MessageTest extends TestCase
         $this->assertEquals(new Header('Host', 'example.com'), $mutated->header('Host'));
         $this->assertEquals(new Header('host', 'example.com'), $mutated->header('host'));
         $this->assertEquals([new Header('Host', 'example.com')], $mutated->headers());
-        $this->assertSame("Host: example.com\r\n\r\n", (string)$mutated);
+        $this->assertSame("Host: example.com\r\n\r\n", (string) $mutated);
     }
 
     /**
@@ -114,7 +114,7 @@ class MessageTest extends TestCase
 
         $this->assertNotSame($message, $mutated);
         $this->assertSame('Hello world!', $mutated->body());
-        $this->assertSame("\r\nHello world!", (string)$mutated);
+        $this->assertSame("\r\nHello world!", (string) $mutated);
     }
 
     public function testBodyStream()
@@ -122,7 +122,7 @@ class MessageTest extends TestCase
         $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost'), [], 'Hello world!'));
 
         $this->assertInstanceOf(StreamInterface::class, $message->bodyStream());
-        $this->assertSame('Hello world!', (string)$message->body());
+        $this->assertSame('Hello world!', (string) $message->body());
     }
 
     public function testAuthorization()

@@ -12,18 +12,15 @@ use Psr\Http\Message\StreamInterface;
  */
 abstract class Message
 {
-    /**
-     * HTTP header line ending
-     */
+    /** HTTP header line ending */
     const EOL = "\r\n";
 
-    /**
-     * @var MessageInterface
-     */
+    /** @var MessageInterface */
     protected $message;
 
     /**
-     * Message constructor.
+     * Message constructor
+     *
      * @param MessageInterface $message
      */
     public function __construct(MessageInterface $message)

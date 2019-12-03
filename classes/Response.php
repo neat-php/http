@@ -9,9 +9,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 class Response extends Message
 {
-    /**
-     * @var ResponseInterface
-     */
+    /** @var ResponseInterface */
     protected $message;
 
     /**

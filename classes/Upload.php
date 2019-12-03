@@ -7,9 +7,7 @@ use RuntimeException;
 
 class Upload
 {
-    /**
-     * @var UploadedFileInterface
-     */
+    /** @var UploadedFileInterface */
     protected $file;
 
     /**
@@ -55,6 +53,7 @@ class Upload
     public function moved()
     {
         trigger_error('Method:' . __METHOD__ . ' is deprecated', E_USER_DEPRECATED);
+
         return false;
     }
 

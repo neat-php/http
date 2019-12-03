@@ -39,7 +39,7 @@ class RequestTest extends TestCase
         $request = new Request($psrRequest);
 
         $this->assertSame('', $request->body());
-        $this->assertSame('', (string)$request->url());
+        $this->assertSame('', (string) $request->url());
         $this->assertsame('GET', $request->method());
         $this->assertSame([], $request->query());
         $this->assertSame([], $request->post());
@@ -75,9 +75,9 @@ class RequestTest extends TestCase
 //        $request = new Request('GET', 'http://localhost/');
 
         $this->assertSame('', $request->body());
-        $this->assertSame('http://localhost/', (string)$request->url());
+        $this->assertSame('http://localhost/', (string) $request->url());
         $this->assertsame('GET', $request->method());
-        $this->assertsame("GET / HTTP/1.1\r\n\r\n", (string)$request);
+        $this->assertsame("GET / HTTP/1.1\r\n\r\n", (string) $request);
     }
 
     /**
@@ -108,15 +108,15 @@ class RequestTest extends TestCase
         $request = new Request($psrRequest);
 //        $request    = new Request('POST', 'https://localhost/resource?id=1', ['json' => true]);
 
-        $this->assertSame('{"json":true}', (string)$request->body());
+        $this->assertSame('{"json":true}', (string) $request->body());
         $this->assertSame(['json' => true], $request->post());
         $this->assertSame(true, $request->post('json'));
         $this->assertNull($request->post('unknown'));
         $this->assertEquals(new Header('Content-Type', 'application/json'), $request->header('Content-Type'));
-        $this->assertSame('https://localhost/resource?id=1', (string)$request->url());
+        $this->assertSame('https://localhost/resource?id=1', (string) $request->url());
         $this->assertsame('POST', $request->method());
         $this->assertsame("POST /resource?id=1 HTTP/1.1\r\nContent-Type: application/json\r\n\r\n{\"json\":true}",
-            (string)$request);
+            (string) $request);
     }
 
     /**

@@ -12,9 +12,7 @@ use Psr\Http\Message\UriInterface;
  */
 class Url
 {
-    /**
-     * @var UriInterface
-     */
+    /** @var UriInterface */
     private $url;
 
     /**
@@ -189,7 +187,7 @@ class Url
     /**
      * Get fragment
      *
-     * @return string Fragment.
+     * @return string Fragment
      */
     public function fragment()
     {
@@ -268,7 +266,7 @@ class Url
      *
      * @param int|null $port Port number to add or null to remove the port number
      * @return static
-     * @throws InvalidArgumentException for invalid ports.
+     * @throws InvalidArgumentException for invalid ports
      */
     public function withPort(int $port = null)
     {

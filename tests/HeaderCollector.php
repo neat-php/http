@@ -4,9 +4,7 @@ namespace Neat\Http\Test;
 
 class HeaderCollector
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     private static $headers = [];
 
     /**

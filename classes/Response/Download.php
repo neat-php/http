@@ -10,28 +10,21 @@ use Psr\Http\Message\StreamInterface;
 
 class Download
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $body;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $mimeType;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $name;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $attachment;
 
     /**
-     * Download constructor.
+     * Download constructor
+     *
      * @param StreamInterface $body
      * @param string          $name
      * @param string          $mimeType

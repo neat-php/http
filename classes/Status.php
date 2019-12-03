@@ -9,9 +9,6 @@ namespace Neat\Http;
  */
 class Status
 {
-    /**
-     * @var string[]
-     */
     const REASONS = [
         100 => 'Continue',
         101 => 'Switching Protocols',
@@ -73,14 +70,10 @@ class Status
         511 => 'Network Authentication Required',
     ];
 
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $code;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $reason;
 
     /**

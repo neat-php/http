@@ -7,11 +7,12 @@ use Neat\Http\Session;
 class SessionMock extends Session
 {
     private $active = false;
-    
+
     /**
      * SessionMock constructor
      *
      * @param array $session
+     * @noinspection PhpMissingParentConstructorInspection
      */
     public function __construct(&$session = null)
     {

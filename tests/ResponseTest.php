@@ -32,7 +32,7 @@ class ResponseTest extends TestCase
 
         $this->assertSame('', $response->body());
         $this->assertSame(204, $response->status()->code());
-        $this->assertSame("HTTP/1.1 204 No Content\r\n\r\n", (string)$response);
+        $this->assertSame("HTTP/1.1 204 No Content\r\n\r\n", (string) $response);
     }
 
     /**
@@ -55,7 +55,7 @@ class ResponseTest extends TestCase
 
         $this->assertSame('Hello world!', $response->body());
         $this->assertSame(200, $response->status()->code());
-        $this->assertSame("HTTP/1.1 200 OK\r\n\r\nHello world!", (string)$response);
+        $this->assertSame("HTTP/1.1 200 OK\r\n\r\nHello world!", (string) $response);
     }
 
     /**
@@ -81,7 +81,7 @@ class ResponseTest extends TestCase
         $this->assertEquals(new Header('Content-Type', 'application/json'), $response->header('Content-Type'));
         $this->assertSame(200, $response->status()->code());
         $this->assertSame("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"json\":true}",
-            (string)$response);
+            (string) $response);
     }
 
     /**
@@ -117,10 +117,10 @@ class ResponseTest extends TestCase
         $this->assertNotSame($response, $mutated);
         $this->assertSame('', $response->body());
         $this->assertSame(404, $response->status()->code());
-        $this->assertSame("HTTP/1.1 404 Not Found\r\n\r\n", (string)$response);
+        $this->assertSame("HTTP/1.1 404 Not Found\r\n\r\n", (string) $response);
 
         $this->assertSame(500, $mutated->status()->code());
-        $this->assertSame("HTTP/1.1 500 Internal Server Error\r\n\r\n", (string)$mutated);
+        $this->assertSame("HTTP/1.1 500 Internal Server Error\r\n\r\n", (string) $mutated);
     }
 
     /**
@@ -160,11 +160,11 @@ class ResponseTest extends TestCase
         $this->assertSame('', $response->body());
         $this->assertEquals($before, $response->status());
         $this->assertSame(404, $response->status()->code());
-        $this->assertSame("HTTP/1.1 404 Are you lost?\r\n\r\n", (string)$response);
+        $this->assertSame("HTTP/1.1 404 Are you lost?\r\n\r\n", (string) $response);
 
         $this->assertEquals($after, $mutated->status());
         $this->assertSame(403, $mutated->status()->code());
-        $this->assertSame("HTTP/1.1 403 You shall not pass!\r\n\r\n", (string)$mutated);
+        $this->assertSame("HTTP/1.1 403 You shall not pass!\r\n\r\n", (string) $mutated);
     }
 
     /**

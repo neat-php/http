@@ -13,7 +13,7 @@ interface Transmitter
     public function html(string $html): Response;
 
     /**
-     * @param \JsonSerializable|array|object $body
+     * @param array|object $body
      * @return Response
      */
     public function json($body): Response;

@@ -5,7 +5,7 @@ namespace Neat\Http\Header;
 use Neat\Http\Message;
 
 /**
- * Class ContentDisposition
+ * HTTP ContentDisposition header
  *
  * @url https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
  *
@@ -39,33 +39,26 @@ use Neat\Http\Message;
  * Content-Disposition: form-data
  * Content-Disposition: form-data; name="fieldName"
  * Content-Disposition: form-data; name="fieldName"; filename="filename.jpg"
- *
- * @package Neat\Http\Header
  */
 class ContentDisposition implements Header
 {
     const HEADER = 'Content-Disposition';
 
-    const INLINE     = 'inline';
+    const INLINE = 'inline';
     const ATTACHMENT = 'attachment';
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $value;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $filename;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $name;
 
     /**
-     * ContentDisposition constructor.
+     * ContentDisposition constructor
+     *
      * @param string      $value
      * @param string|null $filename
      * @param string|null $name
