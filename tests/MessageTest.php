@@ -156,8 +156,19 @@ class MessageTest extends TestCase
         $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost')));
         $this->assertNull($message->authorization());
 
-        $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost'),
-            ['Authorization' => ['Basic credentials']]));
+        $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost'), [
+            'Authorization' => ['Unknown credentials']
+        ]));
+        $this->assertNull($message->authorization());
+
+        $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost'), [
+            'Authorization' => ['Missing']
+        ]));
+        $this->assertNull($message->authorization());
+
+        $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost'), [
+            'Authorization' => ['Basic credentials']
+        ]));
 
         $authorization = $message->authorization();
         $this->assertInstanceOf(Header\Authorization::class, $authorization);
@@ -179,18 +190,31 @@ class MessageTest extends TestCase
         $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost')));
         $this->assertNull($message->contentType());
 
-        $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost'),
-            ['Content-Type' => ['application/json; charset=utf-8']]));
+        $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost'), [
+            'Content-Type' => ['application/json']
+        ]));
 
         $contentType = $message->contentType();
 
         $this->assertInstanceOf(Header\ContentType::class, $contentType);
         $this->assertSame('application/json', $contentType->getValue());
-        $this->assertSame('utf-8', $contentType->getCharset());
+        $this->assertNull($contentType->getCharset());
+        $this->assertNull($contentType->getBoundary());
 
-        $message     = $message->withContentType('plain/text', 'ascii');
+        $message     = $message->withContentType('multipart/form-data', 'utf-8', 'custom-boundary');
         $contentType = $message->contentType();
-        $this->assertSame('plain/text', $contentType->getValue());
-        $this->assertSame('ascii', $contentType->getCharset());
+        $this->assertInstanceOf(Header\ContentType::class, $contentType);
+        $this->assertSame('multipart/form-data', $contentType->getValue());
+        $this->assertSame('utf-8', $contentType->getCharset());
+        $this->assertSame('custom-boundary', $contentType->getBoundary());
+
+        $message     = new MessageMock(new ServerRequest('POST', new Uri('https://localhost'), [
+            'Content-Type' => ['multipart/form-data; charset=utf-8; boundary=custom-boundary']
+        ]));
+        $contentType = $message->contentType();
+        $this->assertInstanceOf(Header\ContentType::class, $contentType);
+        $this->assertSame('multipart/form-data', $contentType->getValue());
+        $this->assertSame('utf-8', $contentType->getCharset());
+        $this->assertSame('custom-boundary', $contentType->getBoundary());
     }
 }
