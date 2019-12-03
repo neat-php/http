@@ -26,6 +26,16 @@ class Url
     }
 
     /**
+     * Get URL as string
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->url->__toString();
+    }
+
+    /**
      * @return UriInterface
      */
     public function getUri(): UriInterface
@@ -38,36 +48,9 @@ class Url
      *
      * @return string
      */
-    public function __toString()
-    {
-        return $this->get();
-    }
-
-    /**
-     * Get URL as string
-     *
-     * @return string
-     */
     public function get()
     {
-        $url = '';
-        if ($this->scheme()) {
-            $url = $this->scheme() . ':';
-        }
-        if ($this->host()) {
-            $url .= '//' . $this->authority();
-        }
-        if ($this->path()) {
-            $url .= '/' . ltrim($this->path(), '/');
-        }
-        if ($this->query()) {
-            $url .= '?' . $this->query();
-        }
-        if ($this->fragment()) {
-            $url .= '#' . $this->fragment();
-        }
-
-        return $url;
+        return $this->url->__toString();
     }
 
     /**
@@ -91,50 +74,27 @@ class Url
     }
 
     /**
-     * @return array
-     */
-    protected function userInfo(): array
-    {
-        $userInfo      = $this->url->getUserInfo();
-        $userInfoParts = $userInfo ? explode(':', $userInfo, 2) : [];
-        if (count($userInfoParts) === 0) {
-            return [
-                'name'     => null,
-                'password' => null,
-            ];
-        }
-        if (count($userInfoParts) === 1) {
-            return [
-                'name'     => reset($userInfoParts),
-                'password' => null,
-            ];
-        }
-        list($name, $password) = $userInfoParts;
-
-        return [
-            'name'     => $name,
-            'password' => $password,
-        ];
-    }
-
-    /**
      * Get username
      *
-     * @return string
+     * @return string|null
      */
     public function username()
     {
-        return $this->userInfo()['name'];
+        $info = $this->url->getUserInfo();
+
+        return $info ? explode(':', $info, 2)[0] ?? null : null;
     }
 
     /**
      * Get password
      *
-     * @return string
+     * @return string|null
      */
     public function password()
     {
-        return $this->userInfo()['password'];
+        $info = $this->url->getUserInfo();
+
+        return $info ? explode(':', $info, 2)[1] ?? null : null;
     }
 
     /**
@@ -154,13 +114,6 @@ class Url
      */
     public function port()
     {
-        if ($this->url->getPort() == 80 && $this->scheme() == 'http') {
-            return null;
-        }
-        if ($this->url->getPort() == 443 && $this->scheme() == 'https') {
-            return null;
-        }
-
         return $this->url->getPort();
     }
 
@@ -202,16 +155,11 @@ class Url
      */
     public function authority()
     {
-        $userInfo = $this->username();
-        if ($this->password()) {
-            $userInfo .= ':' . $this->password();
-        }
-        $port      = $this->port();
-        $authority = $this->host();
-        if ($authority && $userInfo) {
+        $authority = $this->url->getHost();
+        if ($authority && $userInfo = $this->url->getUserInfo()) {
             $authority = $userInfo . '@' . $authority;
         }
-        if ($authority && $port) {
+        if ($authority && $port = $this->url->getPort()) {
             $authority .= ':' . $port;
         }
 
@@ -270,10 +218,6 @@ class Url
      */
     public function withPort(int $port = null)
     {
-        if ($port !== null && ($port < 0 || $port > 65536)) {
-            throw new InvalidArgumentException('Invalid port number: ' . $port);
-        }
-
         $new      = clone $this;
         $new->url = $this->url->withPort($port);
 
