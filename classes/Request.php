@@ -3,7 +3,6 @@
 namespace Neat\Http;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UploadedFileInterface;
 
 /**
  * HTTP Request
@@ -154,12 +153,16 @@ class Request extends Message
     }
 
     /**
-     * @param string $var
-     * @return string|null
+     * @param string $name
+     * @return mixed
      */
-    public function server(string $var)
+    public function server(string $name = null)
     {
-        return $this->message->getServerParams()[$var] ?? null;
+        if ($name === null) {
+            return $this->message->getServerParams();
+        }
+
+        return $this->message->getServerParams()[$name] ?? null;
     }
 
     /**
@@ -168,26 +171,6 @@ class Request extends Message
     public function clientIp()
     {
         return $this->server('REMOTE_ADDR');
-    }
-
-    /**
-     * Set method
-     *
-     * @param string $method
-     */
-    protected function setMethod($method)
-    {
-        $this->message = $this->message->withMethod($method);
-    }
-
-    /**
-     * Set URL
-     *
-     * @param Url $url
-     */
-    protected function setUrl(Url $url)
-    {
-        $this->message = $this->message->withUri($url->getUri());
     }
 
     /**
@@ -216,7 +199,7 @@ class Request extends Message
     public function withMethod($method)
     {
         $new = clone $this;
-        $new->setMethod($method);
+        $new->message = $this->message->withMethod($method);
 
         return $new;
     }
@@ -230,7 +213,7 @@ class Request extends Message
     public function withUrl(Url $url)
     {
         $new = clone $this;
-        $new->setUrl($url);
+        $new->message = $this->message->withUri($url->getUri());
 
         return $new;
     }
@@ -244,7 +227,7 @@ class Request extends Message
     public function withQuery(array $query)
     {
         $new = clone $this;
-        $new->setUrl($this->url()->withQuery(http_build_query($query)));
+        $new->message = $this->message->withUri($this->message->getUri()->withQuery(http_build_query($query)));
 
         return $new;
     }
@@ -252,15 +235,18 @@ class Request extends Message
     /**
      * Get new request with uploaded files
      *
-     * @param Upload[] $files
+     * @param Upload[]|Upload[][]|... $files
      * @return Request
      */
     public function withFiles(array $files)
     {
+        array_walk_recursive($files, function (&$upload) {
+            /** @var Upload $upload */
+            $upload = $upload->file();
+        });
+
         $new          = clone $this;
-        $new->message = $this->message->withUploadedFiles(array_map(function (Upload $upload): UploadedFileInterface {
-            return $upload->file();
-        }, $files));
+        $new->message = $this->message->withUploadedFiles($files);
 
         return $new;
     }

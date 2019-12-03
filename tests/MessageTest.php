@@ -51,7 +51,7 @@ class MessageTest extends TestCase
         /** @var MessageInterface|MockObject $psrMessage */
         $psrMessage  = $this->getMockForAbstractClass(MessageInterface::class);
         $psrMessage2 = clone $psrMessage;
-        $psrMessage->expects($this->at(0))->method('withProtocolVersion')->with($this->equalTo('1.0'))->willReturn($psrMessage2);
+        $psrMessage->expects($this->at(0))->method('withProtocolVersion')->with('1.0')->willReturn($psrMessage2);
         $psrMessage->expects($this->at(1))->method('getProtocolVersion')->willReturn('1.1');
         $psrMessage2->expects($this->at(0))->method('getProtocolVersion')->willReturn('1.0');
 
@@ -73,11 +73,10 @@ class MessageTest extends TestCase
         /** @var MessageInterface|MockObject $psrMessage */
         $psrMessage  = $this->getMockForAbstractClass(MessageInterface::class);
         $psrMessage2 = clone $psrMessage;
-        $psrMessage->expects($this->at(0))->method('withHeader')
-            ->with($this->equalTo('Host'), $this->equalTo('example.com'))->willReturn($psrMessage2);
-        $psrMessage->expects($this->at(1))->method('getHeader')->with($this->equalTo('Host'))->willReturn(['example.net']);
-        $psrMessage2->expects($this->at(0))->method('getHeader')->with($this->equalTo('Host'))->willReturn(['example.com']);
-        $psrMessage2->expects($this->at(1))->method('getHeader')->with($this->equalTo('host'))->willReturn(['example.com']);
+        $psrMessage->expects($this->at(0))->method('withHeader')->with('Host', 'example.com')->willReturn($psrMessage2);
+        $psrMessage->expects($this->at(1))->method('getHeader')->with('Host')->willReturn(['example.net']);
+        $psrMessage2->expects($this->at(0))->method('getHeader')->with('Host')->willReturn(['example.com']);
+        $psrMessage2->expects($this->at(1))->method('getHeader')->with('host')->willReturn(['example.com']);
         $psrMessage2->expects($this->at(2))->method('getHeaders')->willReturn(['Host' => ['example.com']]);
         $psrMessage2->expects($this->at(3))->method('getHeaders')->willReturn(['Host' => ['example.com']]);
         $psrMessage2->expects($this->at(4))->method('getBody')->willReturn($psrStream);
@@ -92,6 +91,33 @@ class MessageTest extends TestCase
         $this->assertEquals(new Header('host', 'example.com'), $mutated->header('host'));
         $this->assertEquals([new Header('Host', 'example.com')], $mutated->headers());
         $this->assertSame("Host: example.com\r\n\r\n", (string) $mutated);
+    }
+
+    /**
+     * Test message without removed header
+     */
+    public function testRemovedHeader()
+    {
+        /** @var StreamInterface|MockObject $psrStream */
+        $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
+        /** @var MessageInterface|MockObject $psrMessage */
+        $psrMessage  = $this->getMockForAbstractClass(MessageInterface::class);
+        $psrMessage2 = clone $psrMessage;
+        $psrMessage->expects($this->at(0))->method('withoutHeader')->with('Host')->willReturn($psrMessage2);
+        $psrMessage->expects($this->at(1))->method('getHeader')->with('Host')->willReturn(['example.com']);
+        $psrMessage2->expects($this->any())->method('getHeader')->with('Host')->willReturn([]);
+        $psrMessage2->expects($this->any())->method('getHeaders')->willReturn([]);
+        $psrMessage2->expects($this->any())->method('getBody')->willReturn($psrStream);
+        $psrStream->expects($this->once())->method('getContents')->willReturn('');
+
+        $message = new MessageMock($psrMessage);
+        $mutated = $message->withoutHeader('Host');
+
+        $this->assertNotSame($message, $mutated);
+        $this->assertEquals(new Header('Host', 'example.com'), $message->header('Host'));
+        $this->assertNull($mutated->header('Host'));
+        $this->assertEquals([], $mutated->headers());
+        $this->assertSame("\r\n", (string) $mutated);
     }
 
     /**
@@ -131,13 +157,13 @@ class MessageTest extends TestCase
         $this->assertNull($message->authorization());
 
         $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost'),
-            ['Authorization' => ['Basic abcdef']]));
+            ['Authorization' => ['Basic credentials']]));
 
         $authorization = $message->authorization();
         $this->assertInstanceOf(Header\Authorization::class, $authorization);
         $this->assertTrue($authorization->isBasic());
         $this->assertFalse($authorization->isBearer());
-        $this->assertSame('abcdef', $authorization->credentials());
+        $this->assertSame('credentials', $authorization->credentials());
         $this->assertSame('Basic', $authorization->type());
 
         $message       = $message->withAuthorization('Bearer', 'HelloWorld');

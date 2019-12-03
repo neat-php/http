@@ -30,6 +30,7 @@ class ResponseTest extends TestCase
 
         $response = new Response($psrResponse);
 
+        $this->assertSame($psrResponse, $response->psr());
         $this->assertSame('', $response->body());
         $this->assertSame(204, $response->status()->code());
         $this->assertSame("HTTP/1.1 204 No Content\r\n\r\n", (string) $response);
