@@ -6,6 +6,16 @@ Neat HTTP components
 Neat HTTP components provide a clean and expressive API for your application
 to access HTTP messages.
 
+Requirements
+------------
+To use Neat HTTP components you will need
+- PHP 7.0 or newer
+- a [PSR-7 HTTP message implementation](https://packagist.org/providers/psr/http-message-implementation)
+
+To send and receive messages, we suggest using
+the [neat/http-client](https://github.com/neat-php/http-client)
+and [neat/http-server](https://github.com/neat-php/http-server) packages.
+
 Getting started
 ---------------
 To install this package, simply issue [composer](https://getcomposer.org) on the
@@ -13,15 +23,6 @@ command line:
 ```
 composer require neat/http
 ```
-
-Additionally, you will need
-a [PSR-7 HTTP message implementation](https://packagist.org/providers/psr/http-message-implementation)
-and a [PSR-17 HTTP factory implementation](https://packagist.org/providers/psr/http-factory-implementation)
-to use Neat HTTP components.
-
-To use Neat HTTP messages, we suggest requiring
-the [neat/http-client](https://github.com/neat-php/http-client)
-and [neat/http-server](https://github.com/neat-php/http-server) packages.
 
 Reading the request
 -------------------

@@ -32,7 +32,6 @@
     },
     "require": {
         "php": ">=7.0",
-        "ext-json": "*",
         "psr/http-message": "^1.0"
     },
     "require-dev": {
