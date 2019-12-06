@@ -5,8 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Neat HTTP client and server suggestion.
+
 ### Removed
 - Removed strict_types=1 declaration.
+
+### Fixed
+- Readme documentation examples.
 
 ## [0.5.1]
 ### Added

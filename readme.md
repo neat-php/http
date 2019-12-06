@@ -1,10 +1,10 @@
 Neat HTTP components
-=======================
+====================
 [![Stable Version](https://poser.pugx.org/neat/http/version)](https://packagist.org/packages/neat/http)
 [![Build Status](https://travis-ci.org/neat-php/http.svg?branch=master)](https://travis-ci.org/neat-php/http)
 
 Neat HTTP components provide a clean and expressive API for your application
-to accept and return HTTP messages.
+to access HTTP messages.
 
 Getting started
 ---------------
@@ -14,22 +14,21 @@ command line:
 composer require neat/http
 ```
 
-Then capture the request, do your thing and send a response:
-```php
-<?php
+Additionally, you will need
+a [PSR-7 HTTP message implementation](https://packagist.org/providers/psr/http-message-implementation)
+and a [PSR-17 HTTP factory implementation](https://packagist.org/providers/psr/http-factory-implementation)
+to use Neat HTTP components.
 
-$request = Neat\Http\Request::capture();
-
-// ...
-
-$response = new Neat\Http\Response("Here's my response");
-$response->send();
-```
+To use Neat HTTP messages, we suggest requiring
+the [neat/http-client](https://github.com/neat-php/http-client)
+and [neat/http-server](https://github.com/neat-php/http-server) packages.
 
 Reading the request
-------------------
-The request can be read using simple methods like show below.
+-------------------
+The request can be read using simple methods like shown below.
 ```php
+<?php /** @var Neat\Http\Request $request */
+
 // Get ?page= query parameter
 $page = $request->query('page');
 
@@ -38,6 +37,9 @@ $name = $request->post('name');
 
 // Or just get all posted fields
 $post = $request->post();
+
+// Who doesn't want a cookie
+$preference = $request->cookie('preference');
 
 // Get the request method
 $method = $request->method();
@@ -48,14 +50,10 @@ $url = $request->url();
 
 URL inspection
 --------------
-To save you the trouble of disecting and concatenating URL's by hand, the
+To save you the trouble of dissecting and concatenating URL's by hand, the
 URL class will lend you a hand:
 ```php
-// Besides asking the request, you can capture the URL from globals directly
-$url = Neat\Http\Url::capture();
-
-// Or create a URL manually
-$url = new Neat\Http\Url('https://example.com/articles?page=2');
+<?php /** @var Neat\Http\Url $url */
 
 // You can easily print the URL because it converts to a string when needed
 echo $url;
@@ -71,15 +69,17 @@ $url->query();    // 'page=2'
 $url->fragment(); // ''
 
 // Do you want to create a slightly different URL based on this one?
-$mutation = $url->withPath('/just')->withQuery('tweak=any&part=youlike);
+$mutation = $url->withPath('/just')->withQuery('tweak=any&part=youlike');
 ```
 
 File uploads
 ------------
 Uploaded files can be accessed through the request using the ```file``` method.
 ```php
+<?php /** @var Neat\Http\Request $request */
+
 // Get uploaded file with the name avatar
-$file = $request->file('avatar');
+$file = $request->files('avatar');
 
 // Check the error status
 if (!$file->ok()) {
@@ -87,60 +87,10 @@ if (!$file->ok()) {
 }
 
 // Get the file name, size and mime type
-$file->name(); // 'selfie.jpg' <-- provided by the client, so consider it unsafe user input
-$file->mime(); // 'image/jpeg' <-- provided by the client, so consider it unsafe user input
+$file->clientName(); // 'selfie.jpg' <-- provided by the client, so consider it unsafe user input
+$file->clientType(); // 'image/jpeg' <-- provided by the client, so consider it unsafe user input
 $file->size(); // 21359
 
 // Move the file from its temporary location
 $file->moveTo('destination/path/including/filename.jpg');
-```
-
-Cookies
--------
-Cookies can be red using the ```cookie``` method.
-```php
-// Get a cookie value
-$value = $request->cookie('preference');
-```
-
-Responding
-----------
-Building responses with Neat HTTP components is real easy:
- 
-```php
-// Create a simple text response
-$response = new Neat\Http\Response('Hello world!');
-
-// Add a header
-$response = $response->withHeader('Content-Type', 'text/plain');
-
-// Use a non-200 status code
-$response = $response->withStatus(403, 'None shall pass!');
-
-// And send it away
-$response->send();
-```
-
-Certain types of responses (redirects for example) can become quite cumbersome
-to create. Therefor you can use static factory methods like ```redirect```: 
-```php
-// Create a redirection response
-$response = Neat\Http\Response::redirect('/');
-
-// Or create a 204 No Content response using the normal constructor
-$response = new Neat\Http\Response(null);
-```
-
-Using JSON
-----------
-Neat HTTP messages understand JSON decoding and encoding natively. When
-receiving a JSON request, you just use the ```post``` data like you do
-with posted form data. To create a JSON response, just pass an object
-or array into the Response constructor.
-```php
-$request = Neat\Http\Request::capture();
-$request->post() // the JSON data
-
-$response = new Neat\Http\Response(['json' => 'data']);
-$response->send();
 ```
