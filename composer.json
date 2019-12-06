@@ -3,6 +3,8 @@
     "description": "Neat HTTP components",
     "type": "library",
     "keywords": [
+        "psr-7",
+        "neat",
         "http",
         "request",
         "response"
