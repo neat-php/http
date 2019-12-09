@@ -187,7 +187,7 @@ class Url
      * @param string $password Associated password
      * @return static
      */
-    public function withUserInfo($username, $password = '')
+    public function withUserInfo($username, $password = null)
     {
         $new      = clone $this;
         $new->url = $this->url->withUserInfo($username, $password);

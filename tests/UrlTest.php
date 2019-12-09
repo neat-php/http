@@ -157,7 +157,24 @@ class UrlTest extends TestCase
     }
 
     /**
-     * Test with query parameters
+     * Test with username
+     */
+    public function testWithUsername()
+    {
+        $psr2 = $this->getMockForAbstractClass(UriInterface::class);
+        $psr1 = $this->getMockForAbstractClass(UriInterface::class);
+        $psr1->expects($this->once())->method('withUserInfo')->with('jane', $this->isNull())->willReturn($psr2);
+
+        $url = new Url($psr1);
+
+        /** @var Url $new */
+        $new = $url->withUserInfo('jane');
+
+        $this->assertSame($psr2, $new->getUri());
+    }
+
+    /**
+     * Test with user info
      */
     public function testWithUserInfo()
     {
