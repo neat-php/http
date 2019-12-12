@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Neat HTTP client and server suggestion.
 
+### Deprecated
+- Input, Router, Session and Download/Redirect implementations.
+- Receiver and Transmitter interfaces.
+
 ### Removed
 - Removed strict_types=1 declaration.
 

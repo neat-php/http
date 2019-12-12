@@ -8,6 +8,12 @@ use Neat\Http\Header\Header;
 use Neat\Http\Response;
 use Psr\Http\Message\StreamInterface;
 
+/**
+ * Download response factory
+ *
+ * @codeCoverageIgnore
+ * @deprecated Use Neat\Http\Server\Responder instead
+ */
 class Download
 {
     /** @var string */

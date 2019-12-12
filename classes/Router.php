@@ -8,6 +8,9 @@ use RuntimeException;
 
 /**
  * Router
+ *
+ * @deprecated Use Neat\Http\Server\Router instead.
+ * @codeCoverageIgnore
  */
 class Router
 {

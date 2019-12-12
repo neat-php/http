@@ -5,6 +5,12 @@ namespace Neat\Http\Response;
 use Neat\Http\Request;
 use Neat\Http\Response;
 
+/**
+ * Redirect response factory
+ *
+ * @codeCoverageIgnore
+ * @deprecated Use Neat\Http\Server\Responder instead
+ */
 class Redirect
 {
     /** @var Response */

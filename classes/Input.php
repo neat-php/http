@@ -4,6 +4,12 @@ namespace Neat\Http;
 
 use RuntimeException;
 
+/**
+ * Input
+ *
+ * @deprecated Use Neat\Http\Server\Input instead
+ * @codeCoverageIgnore
+ */
 class Input
 {
     /** @var Request */

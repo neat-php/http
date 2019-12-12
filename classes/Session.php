@@ -4,6 +4,9 @@ namespace Neat\Http;
 
 /**
  * HTTP Session
+ *
+ * @deprecated Use Neat\Http\Server\Session instead.
+ * @codeCoverageIgnore
  */
 class Session
 {
