@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Response::send() method.
 - ContentDisposition getValue(), getFilename() and getName() methods.
 - ContentType getValue(), getCharset() and getBoundary() methods.
-- Upload file() method.
+- Upload file() and moved() methods.
 - Url getUri() method.
 
 ### Removed
