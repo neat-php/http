@@ -22,8 +22,17 @@ class Upload
 
     /**
      * @return UploadedFileInterface
+     * @deprecated Use the psr method instead
      */
     public function file(): UploadedFileInterface
+    {
+        return $this->file;
+    }
+
+    /**
+     * @return UploadedFileInterface
+     */
+    public function psr(): UploadedFileInterface
     {
         return $this->file;
     }
