@@ -54,24 +54,49 @@ class ContentDisposition implements Header
     private $filename;
 
     /** @var string|null */
-    private $name;
+    private $fieldname;
 
     /**
      * ContentDisposition constructor
      *
      * @param string      $disposition
      * @param string|null $filename
-     * @param string|null $name
+     * @param string|null $fieldname
      */
-    public function __construct(string $disposition, string $filename = null, string $name = null)
+    public function __construct(string $disposition, string $filename = null, string $fieldname = null)
     {
         $this->disposition = $disposition;
         $this->filename    = $filename;
-        $this->name        = $name;
+        $this->fieldname   = $fieldname;
     }
 
     /**
      * @return string
+     */
+    public function disposition(): string
+    {
+        return $this->disposition;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function filename()
+    {
+        return $this->filename;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function fieldname()
+    {
+        return $this->fieldname;
+    }
+
+    /**
+     * @return string
+     * @deprecated Use the disposition method instead
      */
     public function getValue(): string
     {
@@ -80,6 +105,7 @@ class ContentDisposition implements Header
 
     /**
      * @return string|null
+     * @deprecated Use the filename method instead
      */
     public function getFilename()
     {
@@ -88,10 +114,11 @@ class ContentDisposition implements Header
 
     /**
      * @return string|null
+     * @deprecated Use the fieldname method instead
      */
     public function getName()
     {
-        return $this->name;
+        return $this->fieldname;
     }
 
     /**
@@ -104,8 +131,8 @@ class ContentDisposition implements Header
         if ($this->filename) {
             $header .= "; filename=\"$this->filename\"";
         }
-        if ($this->name) {
-            $header .= "; name=\"$this->name\"";
+        if ($this->fieldname) {
+            $header .= "; name=\"$this->fieldname\"";
         }
 
         return $message->withHeader(self::HEADER, $header);
@@ -127,11 +154,11 @@ class ContentDisposition implements Header
         $filename = null;
         $name     = null;
         foreach ($parts as $part) {
-            if (stripos($part, 'filename')) {
+            if (stripos($part, 'filename') === 0) {
                 list(, $filename) = explode('=', $part);
                 continue;
             }
-            if (stripos($part, 'name')) {
+            if (stripos($part, 'name') === 0) {
                 list(, $name) = explode('=', $part);
                 continue;
             }

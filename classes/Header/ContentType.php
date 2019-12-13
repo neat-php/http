@@ -51,6 +51,31 @@ class ContentType implements Header
     /**
      * @return string
      */
+    public function type(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function charset()
+    {
+        return $this->charset;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function boundary()
+    {
+        return $this->boundary;
+    }
+
+    /**
+     * @return string
+     * @deprecated Use the type method instead
+     */
     public function getValue(): string
     {
         return $this->type;
@@ -58,6 +83,7 @@ class ContentType implements Header
 
     /**
      * @return string|null
+     * @deprecated Use the charset method instead
      */
     public function getCharset()
     {
@@ -66,6 +92,7 @@ class ContentType implements Header
 
     /**
      * @return string|null
+     * @deprecated Use the boundary method instead
      */
     public function getBoundary()
     {

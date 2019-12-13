@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ServerRequest class.
 - Generic Message header and withHeader methods using __call method.
 - Message contentDisposition() and withContentDisposition() methods.
+- ContentDisposition disposition(), filename() and fieldname() methods.
+- ContentType type(), charset() and boundary() methods.
 
 ### Changed
 - Request is now only a client-side request.
@@ -24,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Readme documentation examples.
+- Unit test coverage.
 
 ## [0.5.1]
 ### Added
