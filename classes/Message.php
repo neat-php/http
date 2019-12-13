@@ -11,7 +11,7 @@ use Psr\Http\Message\StreamInterface;
  * @method Header\Authorization|null authorization()
  * @method Message|static withAuthorization(string $type, string $credentials)
  * @method Header\ContentDisposition|null contentDisposition()
- * @method Message|static withContentDisposition(string $disposition, string $charset = null, string $boundary = null)
+ * @method Message|static withContentDisposition(string $disposition, string $filename = null, string $name = null)
  * @method Header\ContentType|null contentType()
  * @method Message|static withContentType(string $type, string $charset = null, string $boundary = null)
  */

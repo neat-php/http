@@ -48,7 +48,7 @@ class ContentDisposition implements Header
     const ATTACHMENT = 'attachment';
 
     /** @var string */
-    private $value;
+    private $disposition;
 
     /** @var string|null */
     private $filename;
@@ -59,15 +59,15 @@ class ContentDisposition implements Header
     /**
      * ContentDisposition constructor
      *
-     * @param string      $value
+     * @param string      $disposition
      * @param string|null $filename
      * @param string|null $name
      */
-    public function __construct(string $value, string $filename = null, string $name = null)
+    public function __construct(string $disposition, string $filename = null, string $name = null)
     {
-        $this->value    = $value;
-        $this->filename = $filename;
-        $this->name     = $name;
+        $this->disposition = $disposition;
+        $this->filename    = $filename;
+        $this->name        = $name;
     }
 
     /**
@@ -75,7 +75,7 @@ class ContentDisposition implements Header
      */
     public function getValue(): string
     {
-        return $this->value;
+        return $this->disposition;
     }
 
     /**
@@ -100,7 +100,7 @@ class ContentDisposition implements Header
      */
     public function write(Message $message): Message
     {
-        $header = "$this->value";
+        $header = "$this->disposition";
         if ($this->filename) {
             $header .= "; filename=\"$this->filename\"";
         }

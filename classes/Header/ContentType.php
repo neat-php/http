@@ -26,7 +26,7 @@ class ContentType implements Header
     const HEADER = 'Content-Type';
 
     /** @var string */
-    private $value;
+    private $type;
 
     /** @var string|null */
     private $charset;
@@ -37,13 +37,13 @@ class ContentType implements Header
     /**
      * ContentType constructor
      *
-     * @param string      $value
+     * @param string      $type
      * @param string|null $charset
      * @param string|null $boundary
      */
-    public function __construct(string $value, string $charset = null, string $boundary = null)
+    public function __construct(string $type, string $charset = null, string $boundary = null)
     {
-        $this->value    = $value;
+        $this->type     = $type;
         $this->charset  = $charset;
         $this->boundary = $boundary;
     }
@@ -53,7 +53,7 @@ class ContentType implements Header
      */
     public function getValue(): string
     {
-        return $this->value;
+        return $this->type;
     }
 
     /**
@@ -78,7 +78,7 @@ class ContentType implements Header
      */
     public function write(Message $message): Message
     {
-        $header = "$this->value";
+        $header = "$this->type";
         if ($this->charset) {
             $header .= "; charset=$this->charset";
         }
