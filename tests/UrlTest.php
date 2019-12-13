@@ -154,7 +154,7 @@ class UrlTest extends TestCase
         /** @var Url $new */
         $new = $url->$method($value);
 
-        $this->assertSame($psr2, $new->getUri());
+        $this->assertSame($psr2, $new->psr());
     }
 
     /**
