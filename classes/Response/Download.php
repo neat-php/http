@@ -12,7 +12,7 @@ use Psr\Http\Message\StreamInterface;
  * Download response factory
  *
  * @codeCoverageIgnore
- * @deprecated Use Neat\Http\Server\Responder instead
+ * @deprecated Use Neat\Http\Server\Output instead
  */
 class Download
 {

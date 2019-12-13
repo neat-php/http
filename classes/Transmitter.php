@@ -7,7 +7,7 @@ use Neat\Http\Response\Redirect;
 /**
  * Transmitter interface
  *
- * @deprecated Use Neat\Http\Server\Responder or Neat\Http\Server\Server instead.
+ * @deprecated Use Neat\Http\Server\Output or Neat\Http\Server\Server instead.
  */
 interface Transmitter
 {
