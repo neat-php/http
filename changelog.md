@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 - Input, Router, Session and Download/Redirect implementations.
 - Receiver and Transmitter interfaces.
+- Response::send() method.
 
 ### Removed
 - Removed strict_types=1 declaration.

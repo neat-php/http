@@ -95,6 +95,8 @@ class Response extends Message
 
     /**
      * Send response
+     *
+     * @deprecated Use Neat\Http\Server\Server::send() instead.
      */
     public function send()
     {
