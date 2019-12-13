@@ -2,13 +2,18 @@
 
 namespace Neat\Http;
 
-use Neat\Http\Header\Authorization;
-use Neat\Http\Header\ContentType;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
  * HTTP Message
+ *
+ * @method Header\Authorization|null authorization()
+ * @method Message|static withAuthorization(string $type, string $credentials)
+ * @method Header\ContentDisposition|null contentDisposition()
+ * @method Message|static withContentDisposition(string $disposition, string $charset = null, string $boundary = null)
+ * @method Header\ContentType|null contentType()
+ * @method Message|static withContentType(string $type, string $charset = null, string $boundary = null)
  */
 abstract class Message
 {
@@ -42,6 +47,27 @@ abstract class Message
         $message .= self::EOL . $this->message->getBody()->getContents();
 
         return $message;
+    }
+
+    /**
+     * @param string $method
+     * @param array  $arguments
+     * @return mixed
+     */
+    public function __call(string $method, array $arguments)
+    {
+        if (strpos($method, 'with') === 0) {
+            /** @var Header\Header $header */
+            $class  = Header::class . '\\' . substr($method, 4);
+            $header = new $class(...$arguments);
+
+            return $header->write($this);
+        }
+
+        $class = Header::class . '\\' . ucfirst($method);
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        return $class::read($this);
     }
 
     /**
@@ -92,47 +118,6 @@ abstract class Message
         return array_map(function (string $name, array $values) {
             return new Header($name, reset($values));
         }, array_keys($headers), $headers);
-    }
-
-    /**
-     * @return Authorization|null
-     */
-    public function authorization()
-    {
-        return Authorization::read($this);
-    }
-
-    /**
-     * @param $type
-     * @param $credentials
-     * @return static
-     */
-    public function withAuthorization(string $type, string $credentials)
-    {
-        $authorization = new Authorization($type, $credentials);
-
-        return $authorization->write($this);
-    }
-
-    /**
-     * @return ContentType|null
-     */
-    public function contentType()
-    {
-        return ContentType::read($this);
-    }
-
-    /**
-     * @param string      $value
-     * @param string|null $charset
-     * @param string|null $boundary
-     * @return static
-     */
-    public function withContentType(string $value, string $charset = null, string $boundary = null)
-    {
-        $contentType = new ContentType($value, $charset, $boundary);
-
-        return $contentType->write($this);
     }
 
     /**

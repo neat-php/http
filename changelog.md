@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Neat HTTP client and server suggestion.
 - ServerRequest class.
+- Generic Message header and withHeader methods using __call method.
+- Message contentDisposition() and withContentDisposition() methods.
 
 ### Changed
 - Request is now only a client-side request.
