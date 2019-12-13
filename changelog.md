@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Input, Router, Session and Download/Redirect implementations.
 - Receiver and Transmitter interfaces.
 - Response::send() method.
+- ContentDisposition getValue(), getFilename() and getName() methods.
+- ContentType getValue(), getCharset() and getBoundary() methods.
 
 ### Removed
 - Removed strict_types=1 declaration.
