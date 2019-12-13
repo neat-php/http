@@ -17,6 +17,7 @@ class UrlTest extends TestCase
 
         $url = new Url($psr);
 
+        $this->assertSame($psr, $url->psr());
         $this->assertSame($psr, $url->getUri());
     }
 
@@ -170,7 +171,7 @@ class UrlTest extends TestCase
         /** @var Url $new */
         $new = $url->withUserInfo('jane');
 
-        $this->assertSame($psr2, $new->getUri());
+        $this->assertSame($psr2, $new->psr());
     }
 
     /**
@@ -187,7 +188,7 @@ class UrlTest extends TestCase
         /** @var Url $new */
         $new = $url->withUserInfo('john', 'secret');
 
-        $this->assertSame($psr2, $new->getUri());
+        $this->assertSame($psr2, $new->psr());
     }
 
     /**
@@ -205,6 +206,6 @@ class UrlTest extends TestCase
         /** @var Url $new */
         $new = $url->withQueryParameters(['foo' => 'bar']);
 
-        $this->assertSame($psr2, $new->getUri());
+        $this->assertSame($psr2, $new->psr());
     }
 }

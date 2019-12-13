@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Message contentDisposition() and withContentDisposition() methods.
 - ContentDisposition disposition(), filename() and fieldname() methods.
 - ContentType type(), charset() and boundary() methods.
+- Url psr() method.
 
 ### Changed
 - Request is now only a client-side request.
@@ -22,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Response::send() method.
 - ContentDisposition getValue(), getFilename() and getName() methods.
 - ContentType getValue(), getCharset() and getBoundary() methods.
+- Url getUri() method.
 
 ### Removed
 - Removed strict_types=1 declaration.
