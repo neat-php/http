@@ -32,6 +32,7 @@ class UploadTest extends TestCase
         $file = new Upload($psrUpload);
 
         $this->assertSame($psrUpload, $file->file());
+        $this->assertSame($psrUpload, $file->psr());
         $this->assertSame(__DIR__ . '/test.txt', $file->path());
         $this->assertSame(12, $file->size());
         $this->assertNull($file->clientName());
