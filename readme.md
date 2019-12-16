@@ -28,7 +28,7 @@ Reading the request
 -------------------
 The request can be read using simple methods like shown below.
 ```php
-<?php /** @var Neat\Http\Request $request */
+<?php /** @var Neat\Http\ServerRequest $request */
 
 // Get ?page= query parameter
 $page = $request->query('page');
@@ -77,7 +77,7 @@ File uploads
 ------------
 Uploaded files can be accessed through the request using the ```file``` method.
 ```php
-<?php /** @var Neat\Http\Request $request */
+<?php /** @var Neat\Http\ServerRequest $request */
 
 // Get uploaded file with the name avatar
 $file = $request->files('avatar');
