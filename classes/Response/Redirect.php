@@ -10,6 +10,7 @@ use Neat\Http\Response;
  *
  * @codeCoverageIgnore
  * @deprecated Use Neat\Http\Server\Output instead
+ * @noinspection DuplicatedCode
  */
 class Redirect
 {

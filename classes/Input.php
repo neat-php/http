@@ -9,6 +9,7 @@ use RuntimeException;
  *
  * @deprecated Use Neat\Http\Server\Input instead
  * @codeCoverageIgnore
+ * @noinspection DuplicatedCode
  */
 class Input
 {

@@ -11,6 +11,7 @@ use RuntimeException;
  *
  * @deprecated Use Neat\Http\Server\Router instead.
  * @codeCoverageIgnore
+ * @noinspection DuplicatedCode
  */
 class Router
 {

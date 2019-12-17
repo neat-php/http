@@ -13,6 +13,7 @@ use Psr\Http\Message\StreamInterface;
  *
  * @codeCoverageIgnore
  * @deprecated Use Neat\Http\Server\Output instead
+ * @noinspection DuplicatedCode
  */
 class Download
 {

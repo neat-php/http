@@ -7,6 +7,7 @@ namespace Neat\Http;
  *
  * @deprecated Use Neat\Http\Server\Session instead.
  * @codeCoverageIgnore
+ * @noinspection DuplicatedCode
  */
 class Session
 {
