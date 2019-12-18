@@ -5,6 +5,11 @@ namespace Neat\Http;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
 
+/**
+ * @deprecated Use Neat\Http\Server\Upload instead.
+ * @codeCoverageIgnore
+ * @noinspection DuplicatedCode
+ */
 class Upload
 {
     /** @var UploadedFileInterface */

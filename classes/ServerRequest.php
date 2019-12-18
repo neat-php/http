@@ -5,7 +5,9 @@ namespace Neat\Http;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * HTTP Server Request
+ * @deprecated Use Neat\Http\Server\Request instead.
+ * @codeCoverageIgnore
+ * @noinspection DuplicatedCode
  */
 class ServerRequest extends Request
 {
