@@ -10,19 +10,19 @@ class Header
     /** @var string */
     private $name;
 
-    /** @var string */
+    /** @var string[] */
     private $value;
 
     /**
      * Header constructor
      *
-     * @param string $name
-     * @param string $value
+     * @param string   $name
+     * @param string[] $value
      */
-    public function __construct(string $name, string $value)
+    public function __construct(string $name, string ...$value)
     {
-        $this->name  = $name;
-        $this->value = $value;
+        $this->name  = $this->normalizeHeader($name);
+        $this->value = $this->normalizeValues(...$value);
     }
 
     /**
@@ -42,7 +42,7 @@ class Header
      */
     public function line(): string
     {
-        return sprintf('%s: %s', $this->name, $this->value);
+        return sprintf('%s: %s', $this->name, $this->value());
     }
 
     /**
@@ -62,6 +62,39 @@ class Header
      */
     public function value(): string
     {
-        return $this->value;
+        return implode(',', $this->value);
+    }
+
+    /**
+     * Applies Camel-Case to the header
+     *
+     * @param string $header
+     * @return string
+     */
+    private function normalizeHeader(string $header): string
+    {
+        return ucwords($header, '-');
+    }
+
+    /**
+     * Removes unnecessary whitespace
+     *
+     * @param string ...$value
+     * @return string[]
+     */
+    private function normalizeValues(string ...$value): array
+    {
+        return array_map([$this, 'normalizeValue'], $value);
+    }
+
+    /**
+     * Removes unnecessary whitespace
+     *
+     * @param string $value
+     * @return string
+     */
+    private function normalizeValue(string $value): string
+    {
+        return trim($value, " \t");
     }
 }

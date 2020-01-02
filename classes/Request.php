@@ -98,8 +98,8 @@ class Request extends Message
      */
     public function withUrl(Url $url)
     {
-        $new = clone $this;
-        $new->message = $this->message->withUri($url->getUri());
+        $new          = clone $this;
+        $new->message = $this->message->withUri($url->psr());
 
         return $new;
     }

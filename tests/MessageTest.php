@@ -40,7 +40,7 @@ class MessageTest extends TestCase
         $this->assertNull($message->header('X-Test'));
 
         $this->assertSame("\r\n", Message::EOL);
-        $this->assertSame("\r\n", (string) $message);
+        $this->assertSame("\r\n", (string)$message);
     }
 
     /**
@@ -73,7 +73,9 @@ class MessageTest extends TestCase
         /** @var MessageInterface|MockObject $psrMessage */
         $psrMessage  = $this->getMockForAbstractClass(MessageInterface::class);
         $psrMessage2 = clone $psrMessage;
-        $psrMessage->expects($this->at(0))->method('withHeader')->with('Host', 'example.com')->willReturn($psrMessage2);
+        $psrMessage->expects($this->at(0))->method('withHeader')->with('Host', ['example.com'])->willReturn(
+            $psrMessage2
+        );
         $psrMessage->expects($this->at(1))->method('getHeader')->with('Host')->willReturn(['example.net']);
         $psrMessage2->expects($this->at(0))->method('getHeader')->with('Host')->willReturn(['example.com']);
         $psrMessage2->expects($this->at(1))->method('getHeader')->with('host')->willReturn(['example.com']);
@@ -90,7 +92,40 @@ class MessageTest extends TestCase
         $this->assertEquals(new Header('Host', 'example.com'), $mutated->header('Host'));
         $this->assertEquals(new Header('host', 'example.com'), $mutated->header('host'));
         $this->assertEquals([new Header('Host', 'example.com')], $mutated->headers());
-        $this->assertSame("Host: example.com\r\n\r\n", (string) $mutated);
+        $this->assertSame("Host: example.com\r\n\r\n", (string)$mutated);
+    }
+
+    public function testWithAddedHeader()
+    {
+        /** @var StreamInterface|MockObject $psrStream */
+        $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
+        /** @var MessageInterface|MockObject $psrMessage */
+        $psrMessage  = $this->getMockForAbstractClass(MessageInterface::class);
+        $psrMessage2 = clone $psrMessage;
+        $psrMessage->expects($this->at(0))->method('withAddedHeader')->with('Host', 'example.net')->willReturn(
+            $psrMessage2
+        );
+        $psrMessage->expects($this->at(1))->method('getHeader')->with('Host')->willReturn(['example.com']);
+        $psrMessage->expects($this->at(2))->method('getHeaders')->willReturn(['Host' => ['example.com']]);
+        $psrMessage2->expects($this->at(0))->method('getHeader')->with('Host')->willReturn(['example.com']);
+        $psrMessage2->expects($this->at(1))->method('getHeaders')->willReturn(
+            ['Host' => ['example.com', 'example.net']]
+        );
+        $psrMessage2->expects($this->at(2))->method('getHeaders')->willReturn(
+            ['Host' => ['example.com', 'example.net']]
+        );
+        $psrMessage2->expects($this->at(3))->method('getBody')->willReturn($psrStream);
+        $psrStream->expects($this->at(0))->method('getContents')->willReturn('');
+
+        $message = new MessageMock($psrMessage);
+        $mutated = $message->withAddedHeader('Host', 'example.net');
+
+        $this->assertNotSame($message, $mutated);
+        $this->assertEquals(new Header('Host', 'example.com'), $message->header('Host'));
+        $this->assertEquals(new Header('Host', 'example.com'), $mutated->header('Host'));
+        $this->assertEquals([new Header('Host', 'example.com')], $message->headers());
+        $this->assertEquals([new Header('Host', 'example.com', 'example.net')], $mutated->headers());
+        $this->assertSame("Host: example.com,example.net\r\n\r\n", (string)$mutated);
     }
 
     /**
@@ -117,7 +152,7 @@ class MessageTest extends TestCase
         $this->assertEquals(new Header('Host', 'example.com'), $message->header('Host'));
         $this->assertNull($mutated->header('Host'));
         $this->assertEquals([], $mutated->headers());
-        $this->assertSame("\r\n", (string) $mutated);
+        $this->assertSame("\r\n", (string)$mutated);
     }
 
     /**
@@ -140,7 +175,7 @@ class MessageTest extends TestCase
 
         $this->assertNotSame($message, $mutated);
         $this->assertSame('Hello world!', $mutated->body());
-        $this->assertSame("\r\nHello world!", (string) $mutated);
+        $this->assertSame("\r\nHello world!", (string)$mutated);
     }
 
     public function testBodyStream()
@@ -148,6 +183,6 @@ class MessageTest extends TestCase
         $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost'), [], 'Hello world!'));
 
         $this->assertInstanceOf(StreamInterface::class, $message->bodyStream());
-        $this->assertSame('Hello world!', (string) $message->body());
+        $this->assertSame('Hello world!', (string)$message->body());
     }
 }

@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- The Header class supports multiple values, also affects Message getHeaders() and withHeader() methods.
+- The Header class normalizes the header name and values.
+
+### Added
+- Message withAddedHeader() method.
 
 ## [0.6.1] - 2019-12-18
 ### Deprecated

@@ -111,13 +111,20 @@ abstract class Message
      *
      * @return Header[]
      */
-    public function headers()
+    public function headers(): array
     {
-        $headers = $this->message->getHeaders();
+        $headers = [];
+        foreach ($this->message->getHeaders() as $header => $values) {
+            if (strtolower($header) !== 'set-cookie') {
+                $headers[] = new Header($header, ...$values);
+                continue;
+            }
+            foreach ($values as $value) {
+                $headers[] = new Header($header, $value);
+            }
+        }
 
-        return array_map(function (string $name, array $values) {
-            return new Header($name, reset($values));
-        }, array_keys($headers), $headers);
+        return $headers;
     }
 
     /**
@@ -145,12 +152,24 @@ abstract class Message
      * Get instance with header
      *
      * @param string $name
+     * @param string ...$value
+     * @return static
+     */
+    public function withHeader(string $name, string ...$value)
+    {
+        return new static($this->message->withHeader($name, $value));
+    }
+
+    /**
+     * Get instance with added header
+     *
+     * @param string $name
      * @param string $value
      * @return static
      */
-    public function withHeader(string $name, string $value)
+    public function withAddedHeader(string $name, string $value)
     {
-        return new static($this->message->withHeader($name, $value));
+        return new static($this->message->withAddedHeader($name, $value));
     }
 
     /**
