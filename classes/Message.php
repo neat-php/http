@@ -14,6 +14,8 @@ use Psr\Http\Message\StreamInterface;
  * @method Message|static withContentDisposition(string $disposition, string $filename = null, string $name = null)
  * @method Header\ContentType|null contentType()
  * @method Message|static withContentType(string $type, string $charset = null, string $boundary = null)
+ * @method Header\ContentLength|null contentLength()
+ * @method Message|static withContentLength(int $length)
  */
 abstract class Message
 {
