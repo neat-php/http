@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.3] - 2020-01-14
+### Added
+- ContentLength header
+
 ## [0.6.2] - 2020-01-02
 ### Changed
 - The Header class supports multiple values, also affects Message getHeaders() and withHeader() methods.
