@@ -85,7 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Add RouteNotFound and MethodNotAllowed exceptions.
 - Router match now throws RouteNotFound or MethodNotAllowed exceptions instead of StatusException.
-- Moved StatusException to exception namespace. 
+- Moved StatusException to exception namespace.
 
 ## [0.3.2] - 2019-09-24
 ### Fixed
