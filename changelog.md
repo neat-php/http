@@ -5,8 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.6.4] - 2021-02-12
 ### Fixed
-- RouteNotFound/MethodNotAllowed exceptions HTTP status.
+- RouteNotFound/MethodNotAllowed exceptions HTTP status fixes [#9](https://github.com/neat-php/http/issues/9).
 
 ## [0.6.3] - 2020-01-14
 ### Added
