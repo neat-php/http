@@ -2,7 +2,7 @@
 
 namespace Neat\Http\Exception;
 
-use RuntimeException;
+use Throwable;
 
 /**
  * Method not allowed exception
@@ -11,6 +11,10 @@ use RuntimeException;
  * for example, a GET request on a form that requires data to be
  * presented via POST, or a PUT request on a read-only resource.
  */
-class MethodNotAllowedException extends RuntimeException
+class MethodNotAllowedException extends StatusException
 {
+    public function __construct(string $reason = null, Throwable $previous = null)
+    {
+        parent::__construct(405, $reason, $previous);
+    }
 }

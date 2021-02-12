@@ -2,6 +2,8 @@
 
 namespace Neat\Http\Exception;
 
+use Throwable;
+
 /**
  * Route not found exception
  *
@@ -10,7 +12,7 @@ namespace Neat\Http\Exception;
  */
 class RouteNotFoundException extends StatusException
 {
-    public function __construct(string $reason = null, \Throwable $previous = null)
+    public function __construct(string $reason = null, Throwable $previous = null)
     {
         parent::__construct(404, $reason, $previous);
     }
