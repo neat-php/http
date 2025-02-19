@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Removed
+- Input, Router, Session and Download/Redirect implementations.
+- Receiver and Transmitter interfaces.
+- Response::send() method.
+- ContentDisposition getValue(), getFilename() and getName() methods.
+- ContentType getValue(), getCharset() and getBoundary() methods.
+- Url getUri() method.
+- ServerRequest and Upload. Use Neat\Http\Server\Request and Neat\Http\Server\Upload instead.
 
 ## [0.6.4] - 2021-02-12
 ### Fixed

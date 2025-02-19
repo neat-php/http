@@ -37,15 +37,6 @@ class Url
 
     /**
      * @return UriInterface
-     * @deprecated Use the psr method instead
-     */
-    public function getUri(): UriInterface
-    {
-        return $this->url;
-    }
-
-    /**
-     * @return UriInterface
      */
     public function psr(): UriInterface
     {

@@ -17,14 +17,9 @@ class ContentDispositionTest extends TestCase
     {
         $header = new ContentDisposition(ContentDisposition::INLINE);
 
-        $this->assertSame('inline', $header->getValue());
         $this->assertSame('inline', $header->disposition());
-
         $this->assertNull($header->fieldname());
-        $this->assertNull($header->getName());
-
         $this->assertNull($header->filename());
-        $this->assertNull($header->getFilename());
     }
 
     /**
@@ -34,14 +29,9 @@ class ContentDispositionTest extends TestCase
     {
         $header = new ContentDisposition(ContentDisposition::ATTACHMENT, 'filename.ext', 'FieldName');
 
-        $this->assertSame('attachment', $header->getValue());
         $this->assertSame('attachment', $header->disposition());
-
         $this->assertSame('FieldName', $header->fieldname());
-        $this->assertSame('FieldName', $header->getName());
-
         $this->assertSame('filename.ext', $header->filename());
-        $this->assertSame('filename.ext', $header->getFilename());
     }
 
     /**

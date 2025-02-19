@@ -73,33 +73,6 @@ class ContentType implements Header
     }
 
     /**
-     * @return string
-     * @deprecated Use the type method instead
-     */
-    public function getValue(): string
-    {
-        return $this->type;
-    }
-
-    /**
-     * @return string|null
-     * @deprecated Use the charset method instead
-     */
-    public function getCharset()
-    {
-        return $this->charset;
-    }
-
-    /**
-     * @return string|null
-     * @deprecated Use the boundary method instead
-     */
-    public function getBoundary()
-    {
-        return $this->boundary;
-    }
-
-    /**
      * @param Message $message
      * @return Message
      */

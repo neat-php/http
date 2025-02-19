@@ -18,7 +18,6 @@ class UrlTest extends TestCase
         $url = new Url($psr);
 
         $this->assertSame($psr, $url->psr());
-        $this->assertSame($psr, $url->getUri());
     }
 
     /**

@@ -95,33 +95,6 @@ class ContentDisposition implements Header
     }
 
     /**
-     * @return string
-     * @deprecated Use the disposition method instead
-     */
-    public function getValue(): string
-    {
-        return $this->disposition;
-    }
-
-    /**
-     * @return string|null
-     * @deprecated Use the filename method instead
-     */
-    public function getFilename()
-    {
-        return $this->filename;
-    }
-
-    /**
-     * @return string|null
-     * @deprecated Use the fieldname method instead
-     */
-    public function getName()
-    {
-        return $this->fieldname;
-    }
-
-    /**
      * @param Message $message
      * @return Message
      */

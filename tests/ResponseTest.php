@@ -167,44 +167,4 @@ class ResponseTest extends TestCase
         $this->assertSame(403, $mutated->status()->code());
         $this->assertSame("HTTP/1.1 403 You shall not pass!\r\n\r\n", (string) $mutated);
     }
-
-    /**
-     * Test sending the response
-     */
-    public function testSend()
-    {
-        HeaderCollector::start();
-        ob_start();
-
-        /** @var StreamInterface|MockObject $psrStream */
-        $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
-        /** @var ResponseInterface|MockObject $psrResponse */
-        $psrResponse = $this->getMockForAbstractClass(ResponseInterface::class);
-        /** @var ResponseInterface|MockObject $psrResponse2 */
-        $psrResponse2 = clone $psrResponse;
-
-        $psrResponse->method('withStatus')->with(500)->willReturn($psrResponse2);
-
-        $psrResponse2->method('getProtocolVersion')->willReturn('1.1');
-        $psrResponse2->method('getStatusCode')->willReturn(500);
-        $psrResponse2->method('getReasonPhrase')->willReturn('Internal Server Error');
-        $psrResponse2->method('getHeaders')->willReturn(['Content-Type' => ['application/json']]);
-        $psrResponse2->method('getBody')->willReturn($psrStream);
-
-        $psrStream->method('getSize')->willReturn(0);
-        $psrStream->method('getContents')->willReturn('');
-        $psrStream->expects($this->at(1))->method('eof')->willReturn(false);
-        $psrStream->expects($this->at(2))->method('eof')->willReturn(true);
-        $psrStream->expects($this->once())->method('read')->with(1024)->willReturn('{"error":"Something went wrong"}');
-
-
-        $response = new Response($psrResponse);
-        $response->withStatus(500)->send();
-
-        $this->assertSame('{"error":"Something went wrong"}', ob_get_clean());
-        $this->assertSame([
-            'HTTP/1.1 500 Internal Server Error',
-            'Content-Type: application/json',
-        ], HeaderCollector::all());
-    }
 }

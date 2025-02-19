@@ -18,13 +18,8 @@ class ContentTypeTest extends TestCase
         $header = new ContentType('text/plain');
 
         $this->assertSame('text/plain', $header->type());
-        $this->assertSame('text/plain', $header->getValue());
-
         $this->assertNull($header->charset());
-        $this->assertNull($header->getCharset());
-
         $this->assertNull($header->boundary());
-        $this->assertNull($header->getBoundary());
     }
 
     /**
@@ -35,13 +30,8 @@ class ContentTypeTest extends TestCase
         $header = new ContentType('application/json', 'utf-8', 'boundary');
 
         $this->assertSame('application/json', $header->type());
-        $this->assertSame('application/json', $header->getValue());
-
         $this->assertSame('utf-8', $header->charset());
-        $this->assertSame('utf-8', $header->getCharset());
-
         $this->assertSame('boundary', $header->boundary());
-        $this->assertSame('boundary', $header->getBoundary());
     }
 
     /**

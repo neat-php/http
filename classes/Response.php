@@ -92,22 +92,4 @@ class Response extends Message
 
         return $new;
     }
-
-    /**
-     * Send response
-     *
-     * @deprecated Use Neat\Http\Server\Server::send() instead.
-     */
-    public function send()
-    {
-        header($this->statusLine());
-        foreach ($this->headers() as $header) {
-            header($header->line());
-        }
-
-        $body = $this->message->getBody();
-        while (!$body->eof()) {
-            echo $body->read(1024);
-        }
-    }
 }
