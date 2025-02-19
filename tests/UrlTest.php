@@ -8,10 +8,7 @@ use Psr\Http\Message\UriInterface;
 
 class UrlTest extends TestCase
 {
-    /**
-     * Test PSR getter
-     */
-    public function testPsr()
+    public function testPsr(): void
     {
         $psr = $this->getMockForAbstractClass(UriInterface::class);
 
@@ -20,9 +17,6 @@ class UrlTest extends TestCase
         $this->assertSame($psr, $url->psr());
     }
 
-    /**
-     * @return array
-     */
     public function provideParts(): array
     {
         return [
@@ -46,7 +40,7 @@ class UrlTest extends TestCase
             ['getPath', '/rooted', 'path', '/rooted'],
             ['getQuery', '', 'query', ''],
             ['getQuery', 'key=value', 'query', 'key=value'],
-            ['getFragment', null, 'fragment', null],
+            ['getFragment', '', 'fragment', ''],
             ['getFragment', 'anchor', 'fragment', 'anchor'],
             ['__toString', 'relative', '__toString', 'relative'],
             ['__toString', 'http://localhost/', '__toString', 'http://localhost/'],
@@ -58,13 +52,11 @@ class UrlTest extends TestCase
     }
 
     /**
-     * @param string $psrMethod
      * @param mixed  $psrValue
-     * @param string $method
      * @param mixed  $value
      * @dataProvider provideParts
      */
-    public function testPart($psrMethod, $psrValue, $method, $value)
+    public function testPart(string $psrMethod, $psrValue, string $method, $value): void
     {
         $psr = $this->getMockForAbstractClass(UriInterface::class);
         $psr->expects($this->once())->method($psrMethod)->willReturn($psrValue);
@@ -74,9 +66,6 @@ class UrlTest extends TestCase
         $this->assertSame($value, $url->$method());
     }
 
-    /**
-     * @return array
-     */
     public function provideAuthorities(): array
     {
         return [
@@ -92,13 +81,9 @@ class UrlTest extends TestCase
     }
 
     /**
-     * @param string $host
-     * @param string $port
-     * @param string $userInfo
-     * @param string $authority
      * @dataProvider provideAuthorities
      */
-    public function testAuthority($host, $port, $userInfo, $authority)
+    public function testAuthority(string $host, ?int $port, string $userInfo, string $authority)
     {
         $psr = $this->getMockForAbstractClass(UriInterface::class);
         $psr->expects($this->once())->method('getHost')->willReturn($host);
@@ -112,9 +97,6 @@ class UrlTest extends TestCase
         $this->assertSame($authority, $url->authority());
     }
 
-    /**
-     * @return array
-     */
     public function provideWithParts(): array
     {
         return [
@@ -130,19 +112,17 @@ class UrlTest extends TestCase
             ['withPath', '/rooted', 'withPath', '/rooted'],
             ['withQuery', '', 'withQuery', ''],
             ['withQuery', 'key=value', 'withQuery', 'key=value'],
-            ['withFragment', null, 'withFragment', null],
+            ['withFragment', '', 'withFragment', ''],
             ['withFragment', 'anchor', 'withFragment', 'anchor'],
         ];
     }
 
     /**
-     * @param string $psrMethod
      * @param mixed  $psrValue
-     * @param string $method
      * @param mixed  $value
      * @dataProvider provideWithParts
      */
-    public function testWithPart($psrMethod, $psrValue, $method, $value)
+    public function testWithPart(string $psrMethod, $psrValue, string $method, $value): void
     {
         $psr2 = $this->getMockForAbstractClass(UriInterface::class);
         $psr1 = $this->getMockForAbstractClass(UriInterface::class);
@@ -156,10 +136,7 @@ class UrlTest extends TestCase
         $this->assertSame($psr2, $new->psr());
     }
 
-    /**
-     * Test with username
-     */
-    public function testWithUsername()
+    public function testWithUsername(): void
     {
         $psr2 = $this->getMockForAbstractClass(UriInterface::class);
         $psr1 = $this->getMockForAbstractClass(UriInterface::class);
@@ -167,16 +144,12 @@ class UrlTest extends TestCase
 
         $url = new Url($psr1);
 
-        /** @var Url $new */
         $new = $url->withUserInfo('jane');
 
         $this->assertSame($psr2, $new->psr());
     }
 
-    /**
-     * Test with user info
-     */
-    public function testWithUserInfo()
+    public function testWithUserInfo(): void
     {
         $psr2 = $this->getMockForAbstractClass(UriInterface::class);
         $psr1 = $this->getMockForAbstractClass(UriInterface::class);
@@ -184,16 +157,12 @@ class UrlTest extends TestCase
 
         $url = new Url($psr1);
 
-        /** @var Url $new */
         $new = $url->withUserInfo('john', 'secret');
 
         $this->assertSame($psr2, $new->psr());
     }
 
-    /**
-     * Test with query parameters
-     */
-    public function testWithQueryParameters()
+    public function testWithQueryParameters(): void
     {
         $psr2 = $this->getMockForAbstractClass(UriInterface::class);
         $psr1 = $this->getMockForAbstractClass(UriInterface::class);
@@ -202,7 +171,6 @@ class UrlTest extends TestCase
 
         $url = new Url($psr1);
 
-        /** @var Url $new */
         $new = $url->withQueryParameters(['foo' => 'bar']);
 
         $this->assertSame($psr2, $new->psr());

@@ -10,20 +10,14 @@ use PHPUnit\Framework\TestCase;
 
 class ContentLengthTest extends TestCase
 {
-    /**
-     * Test object
-     */
-    public function testMinimal()
+    public function testMinimal(): void
     {
         $header = new ContentLength(6);
 
         $this->assertSame(6, $header->length());
     }
 
-    /**
-     * Test message interaction
-     */
-    public function testMessage()
+    public function testMessage(): void
     {
         $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost')));
         $this->assertNull($message->contentLength());

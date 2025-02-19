@@ -17,79 +17,51 @@ use Neat\Http\Message;
  */
 class Authorization implements Header
 {
-    const HEADER = 'Authorization';
+    public const HEADER = 'Authorization';
 
-    const TYPES = [self::TYPE_BASIC, self::TYPE_BEARER];
+    public const TYPES = [self::TYPE_BASIC, self::TYPE_BEARER];
 
-    const TYPE_BASIC = 'Basic';
-    const TYPE_BEARER = 'Bearer';
+    public const TYPE_BASIC = 'Basic';
+    public const TYPE_BEARER = 'Bearer';
 
-    /** @var string */
-    private $type;
+    private string $type;
+    private string $credentials;
 
-    /** @var string */
-    private $credentials;
-
-    /**
-     * Authorization constructor
-     *
-     * @param string $type
-     * @param string $credentials
-     */
     public function __construct(string $type, string $credentials)
     {
-        $this->type        = $type;
+        $this->type = $type;
         $this->credentials = $credentials;
     }
 
     /**
-     * Will always return one of self::TYPES or null
-     *
-     * @return string
+     * @return self::TYPE_*
      */
     public function type(): string
     {
         return $this->type;
     }
 
-    /**
-     * @return bool
-     */
     public function isBasic(): bool
     {
         return self::TYPE_BASIC === $this->type;
     }
 
-    /**
-     * @return bool
-     */
     public function isBearer(): bool
     {
         return self::TYPE_BEARER === $this->type;
     }
 
-    /**
-     * @return string
-     */
     public function credentials(): string
     {
         return $this->credentials;
     }
 
-    /**
-     * @param Message $message
-     * @return Message
-     */
     public function write(Message $message): Message
     {
-        return $message->withHeader(self::HEADER, "{$this->type} {$this->credentials}");
+        return $message->withHeader(self::HEADER, "$this->type $this->credentials");
     }
 
-    /**
-     * @param Message $message
-     * @return self|null
-     */
-    public static function read(Message $message)
+    public static function read(Message $message): ?self
     {
         $header = $message->header(self::HEADER);
         if (!$header) {
@@ -101,7 +73,7 @@ class Authorization implements Header
             return null;
         }
 
-        list($type, $credentials) = $parts;
+        [$type, $credentials] = $parts;
         if (!in_array($type, self::TYPES)) {
             return null;
         }

@@ -10,10 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class ContentDispositionTest extends TestCase
 {
-    /**
-     * Test minimal
-     */
-    public function testMinimal()
+    public function testMinimal(): void
     {
         $header = new ContentDisposition(ContentDisposition::INLINE);
 
@@ -22,10 +19,7 @@ class ContentDispositionTest extends TestCase
         $this->assertNull($header->filename());
     }
 
-    /**
-     * Test with names
-     */
-    public function testWithNames()
+    public function testWithNames(): void
     {
         $header = new ContentDisposition(ContentDisposition::ATTACHMENT, 'filename.ext', 'FieldName');
 
@@ -34,10 +28,7 @@ class ContentDispositionTest extends TestCase
         $this->assertSame('filename.ext', $header->filename());
     }
 
-    /**
-     * Test message
-     */
-    public function testMessage()
+    public function testMessage(): void
     {
         $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost')));
         $this->assertNull($message->contentDisposition());
@@ -54,7 +45,7 @@ class ContentDispositionTest extends TestCase
         $this->assertNull($header->fieldname());
 
         $message = $message->withContentDisposition('attachment', 'filename.ext', 'FieldName');
-        $header  = $message->contentDisposition();
+        $header = $message->contentDisposition();
         $this->assertInstanceOf(ContentDisposition::class, $header);
         $this->assertSame('attachment', $header->disposition());
         $this->assertSame('filename.ext', $header->filename());
@@ -63,7 +54,7 @@ class ContentDispositionTest extends TestCase
         $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost'), [
             'Content-Disposition' => ['attachment; filename=photo.jpg; name=Name'],
         ]));
-        $header  = $message->contentDisposition();
+        $header = $message->contentDisposition();
         $this->assertInstanceOf(ContentDisposition::class, $header);
         $this->assertSame('attachment', $header->disposition());
         $this->assertSame('photo.jpg', $header->filename());

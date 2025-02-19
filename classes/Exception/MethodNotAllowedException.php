@@ -13,7 +13,7 @@ use Throwable;
  */
 class MethodNotAllowedException extends StatusException
 {
-    public function __construct(string $reason = null, Throwable $previous = null)
+    public function __construct(?string $reason = null, ?Throwable $previous = null)
     {
         parent::__construct(405, $reason, $previous);
     }

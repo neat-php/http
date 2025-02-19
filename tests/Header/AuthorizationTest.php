@@ -10,10 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class AuthorizationTest extends TestCase
 {
-    /**
-     * Test basic
-     */
-    public function testBasic()
+    public function testBasic(): void
     {
         $header = new Authorization(Authorization::TYPE_BASIC, 'top:secret');
 
@@ -23,10 +20,7 @@ class AuthorizationTest extends TestCase
         $this->assertSame('top:secret', $header->credentials());
     }
 
-    /**
-     * Test bearer
-     */
-    public function testBearer()
+    public function testBearer(): void
     {
         $header = new Authorization(Authorization::TYPE_BEARER, 'credentials');
 
@@ -36,10 +30,7 @@ class AuthorizationTest extends TestCase
         $this->assertSame('credentials', $header->credentials());
     }
 
-    /**
-     * Test message
-     */
-    public function testMessage()
+    public function testMessage(): void
     {
         $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost')));
         $this->assertNull($message->authorization());
@@ -65,7 +56,7 @@ class AuthorizationTest extends TestCase
         $this->assertSame('credentials', $authorization->credentials());
         $this->assertSame('Basic', $authorization->type());
 
-        $message       = $message->withAuthorization('Bearer', 'HelloWorld');
+        $message = $message->withAuthorization('Bearer', 'HelloWorld');
         $authorization = $message->authorization();
         $this->assertFalse($authorization->isBasic());
         $this->assertTrue($authorization->isBearer());

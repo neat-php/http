@@ -20,26 +20,15 @@ use Psr\Http\Message\StreamInterface;
 abstract class Message
 {
     /** HTTP header line ending */
-    const EOL = "\r\n";
+    public const EOL = "\r\n";
 
-    /** @var MessageInterface */
-    protected $message;
+    protected MessageInterface $message;
 
-    /**
-     * Message constructor
-     *
-     * @param MessageInterface $message
-     */
     public function __construct(MessageInterface $message)
     {
         $this->message = $message;
     }
 
-    /**
-     * Get message as a string
-     *
-     * @return string
-     */
     public function __toString(): string
     {
         $message = '';
@@ -52,51 +41,34 @@ abstract class Message
     }
 
     /**
-     * @param string $method
-     * @param array  $arguments
      * @return mixed
      */
     public function __call(string $method, array $arguments)
     {
         if (strpos($method, 'with') === 0) {
             /** @var Header\Header $header */
-            $class  = Header::class . '\\' . substr($method, 4);
+            $class = Header::class . '\\' . substr($method, 4);
             $header = new $class(...$arguments);
 
             return $header->write($this);
         }
-
+        /** @var class-string<Header> $class */
         $class = Header::class . '\\' . ucfirst($method);
 
-        /** @noinspection PhpUndefinedMethodInspection */
         return $class::read($this);
     }
 
-    /**
-     * Get body
-     *
-     * @return string
-     */
     public function body(): string
     {
         return $this->message->getBody()->getContents();
     }
 
-    /**
-     * @return StreamInterface
-     */
     public function bodyStream(): StreamInterface
     {
         return $this->message->getBody();
     }
 
-    /**
-     * Get header value by name
-     *
-     * @param string $name
-     * @return Header|null
-     */
-    public function header(string $name)
+    public function header(string $name): ?Header
     {
         $headerValues = $this->message->getHeader($name);
         if (count($headerValues) === 0) {
@@ -109,8 +81,6 @@ abstract class Message
     }
 
     /**
-     * Get header values
-     *
      * @return Header[]
      */
     public function headers(): array
@@ -129,20 +99,12 @@ abstract class Message
         return $headers;
     }
 
-    /**
-     * Get HTTP version
-     *
-     * @return string
-     */
-    public function version()
+    public function version(): string
     {
         return $this->message->getProtocolVersion();
     }
 
     /**
-     * Get instance with body
-     *
-     * @param StreamInterface $body
      * @return static
      */
     public function withBody(StreamInterface $body)
@@ -151,10 +113,6 @@ abstract class Message
     }
 
     /**
-     * Get instance with header
-     *
-     * @param string $name
-     * @param string ...$value
      * @return static
      */
     public function withHeader(string $name, string ...$value)
@@ -163,10 +121,6 @@ abstract class Message
     }
 
     /**
-     * Get instance with added header
-     *
-     * @param string $name
-     * @param string $value
      * @return static
      */
     public function withAddedHeader(string $name, string $value)
@@ -175,9 +129,6 @@ abstract class Message
     }
 
     /**
-     * Get instance without header
-     *
-     * @param string $name
      * @return static
      */
     public function withoutHeader(string $name)
@@ -186,9 +137,6 @@ abstract class Message
     }
 
     /**
-     * Get instance with version
-     *
-     * @param string $version
      * @return static
      */
     public function withVersion(string $version)

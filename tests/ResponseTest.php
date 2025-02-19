@@ -12,10 +12,7 @@ use Psr\Http\Message\StreamInterface;
 
 class ResponseTest extends TestCase
 {
-    /**
-     * Test empty response
-     */
-    public function testEmpty()
+    public function testEmpty(): void
     {
         /** @var StreamInterface|MockObject $psrStream */
         $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
@@ -36,10 +33,7 @@ class ResponseTest extends TestCase
         $this->assertSame("HTTP/1.1 204 No Content\r\n\r\n", (string) $response);
     }
 
-    /**
-     * Test string response
-     */
-    public function testString()
+    public function testString(): void
     {
         /** @var StreamInterface|MockObject $psrStream */
         $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
@@ -59,10 +53,7 @@ class ResponseTest extends TestCase
         $this->assertSame("HTTP/1.1 200 OK\r\n\r\nHello world!", (string) $response);
     }
 
-    /**
-     * Test JSON response
-     */
-    public function testJson()
+    public function testJson(): void
     {
         /** @var StreamInterface|MockObject $psrStream */
         $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
@@ -85,10 +76,7 @@ class ResponseTest extends TestCase
             (string) $response);
     }
 
-    /**
-     * Test status code response
-     */
-    public function testStatusCode()
+    public function testStatusCode(): void
     {
         /** @var StreamInterface|MockObject $psrStream */
         $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
@@ -124,10 +112,7 @@ class ResponseTest extends TestCase
         $this->assertSame("HTTP/1.1 500 Internal Server Error\r\n\r\n", (string) $mutated);
     }
 
-    /**
-     * Test status response
-     */
-    public function testStatus()
+    public function testStatus(): void
     {
         /** @var StreamInterface|MockObject $psrStream */
         $psrStream = $this->getMockForAbstractClass(StreamInterface::class);

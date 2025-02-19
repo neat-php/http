@@ -9,7 +9,7 @@ namespace Neat\Http;
  */
 class Status
 {
-    const REASONS = [
+    public const REASONS = [
         100 => 'Continue',
         101 => 'Switching Protocols',
         102 => 'Processing',
@@ -70,50 +70,26 @@ class Status
         511 => 'Network Authentication Required',
     ];
 
-    /** @var int */
-    protected $code;
+    protected int $code;
+    protected string $reason;
 
-    /** @var string */
-    protected $reason;
-
-    /**
-     * Status constructor
-     *
-     * @param int    $code
-     * @param string $reason (optional)
-     */
-    public function __construct(int $code, string $reason = null)
+    public function __construct(int $code, ?string $reason = null)
     {
-        $this->code   = $code;
+        $this->code = $code;
         $this->reason = $reason ?? self::REASONS[$code] ?? 'Unknown';
     }
 
-    /**
-     * Convert to string
-     *
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return sprintf('%d %s', $this->code, $this->reason);
     }
 
-    /**
-     * Get code
-     *
-     * @return int
-     */
-    public function code()
+    public function code(): int
     {
         return $this->code;
     }
 
-    /**
-     * Get reason
-     *
-     * @return string
-     */
-    public function reason()
+    public function reason(): string
     {
         return $this->reason;
     }

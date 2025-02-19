@@ -13,10 +13,7 @@ use Psr\Http\Message\UriInterface;
 
 class RequestTest extends TestCase
 {
-    /**
-     * Test empty request
-     */
-    public function testEmpty()
+    public function testEmpty(): void
     {
         /** @var StreamInterface|MockObject $psrStream */
         $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
@@ -34,14 +31,11 @@ class RequestTest extends TestCase
 
         $this->assertSame($psrRequest, $request->psr());
         $this->assertSame('', $request->body());
-        $this->assertSame('', (string) $request->url());
-        $this->assertsame('GET', $request->method());
+        $this->assertSame('', (string)$request->url());
+        $this->assertSame('GET', $request->method());
     }
 
-    /**
-     * Test GET request
-     */
-    public function testGet()
+    public function testGet(): void
     {
         /** @var StreamInterface|MockObject $psrStream */
         $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
@@ -56,6 +50,7 @@ class RequestTest extends TestCase
         $psrRequest->expects($this->any())->method('getProtocolVersion')->willReturn('1.1');
         $psrUri->expects($this->any())->method('__toString')->willReturn('http://localhost/');
         $psrUri->expects($this->any())->method('getPath')->willReturn('/');
+        $psrUri->expects($this->any())->method('getQuery')->willReturn('');
         $psrRequest->expects($this->any())->method('getMethod')->willReturn('GET');
         $psrRequest->expects($this->any())->method('getHeaders')->willReturn([]);
         $psrRequest->expects($this->any())->method('getBody')->willReturn($psrStream);
@@ -63,15 +58,12 @@ class RequestTest extends TestCase
         $request = new Request($psrRequest);
 
         $this->assertSame('', $request->body());
-        $this->assertSame('http://localhost/', (string) $request->url());
-        $this->assertsame('GET', $request->method());
-        $this->assertsame("GET / HTTP/1.1\r\n\r\n", (string) $request);
+        $this->assertSame('http://localhost/', (string)$request->url());
+        $this->assertSame('GET', $request->method());
+        $this->assertSame("GET / HTTP/1.1\r\n\r\n", (string)$request);
     }
 
-    /**
-     * Test POST request
-     */
-    public function testPost()
+    public function testPost(): void
     {
         /** @var StreamInterface|MockObject $psrStream */
         $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
@@ -94,18 +86,17 @@ class RequestTest extends TestCase
 
         $request = new Request($psrRequest);
 
-        $this->assertSame('{"json":true}', (string) $request->body());
+        $this->assertSame('{"json":true}', $request->body());
         $this->assertEquals(new Header('Content-Type', 'application/json'), $request->header('Content-Type'));
-        $this->assertSame('https://localhost/resource?id=1', (string) $request->url());
-        $this->assertsame('POST', $request->method());
-        $this->assertsame("POST /resource?id=1 HTTP/1.1\r\nContent-Type: application/json\r\n\r\n{\"json\":true}",
-            (string) $request);
+        $this->assertSame('https://localhost/resource?id=1', (string)$request->url());
+        $this->assertSame('POST', $request->method());
+        $this->assertSame(
+            "POST /resource?id=1 HTTP/1.1\r\nContent-Type: application/json\r\n\r\n{\"json\":true}",
+            (string)$request,
+        );
     }
 
-    /**
-     * Test with method
-     */
-    public function testWithMethod()
+    public function testWithMethod(): void
     {
         /** @var ServerRequestInterface|MockObject $psrRequest */
         $psrRequest = $this->getMockForAbstractClass(ServerRequestInterface::class);
@@ -120,10 +111,7 @@ class RequestTest extends TestCase
         $this->assertSame('POST', $request->withMethod('POST')->method());
     }
 
-    /**
-     * Test with URL
-     */
-    public function testWithUrl()
+    public function testWithUrl(): void
     {
         /** @var UriInterface|MockObject $psrUri */
         $psrUri = $this->getMockForAbstractClass(UriInterface::class);

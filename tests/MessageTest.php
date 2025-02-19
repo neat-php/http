@@ -13,10 +13,7 @@ use Psr\Http\Message\StreamInterface;
 
 class MessageTest extends TestCase
 {
-    /**
-     * Test defaults
-     */
-    public function testDefaults()
+    public function testDefaults(): void
     {
         /** @var StreamInterface|MockObject $psrStream */
         $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
@@ -43,13 +40,10 @@ class MessageTest extends TestCase
         $this->assertSame("\r\n", (string)$message);
     }
 
-    /**
-     * Test version mutation
-     */
-    public function testVersionMutation()
+    public function testVersionMutation(): void
     {
         /** @var MessageInterface|MockObject $psrMessage */
-        $psrMessage  = $this->getMockForAbstractClass(MessageInterface::class);
+        $psrMessage = $this->getMockForAbstractClass(MessageInterface::class);
         $psrMessage2 = clone $psrMessage;
         $psrMessage->expects($this->at(0))->method('withProtocolVersion')->with('1.0')->willReturn($psrMessage2);
         $psrMessage->expects($this->at(1))->method('getProtocolVersion')->willReturn('1.1');
@@ -63,19 +57,15 @@ class MessageTest extends TestCase
         $this->assertEquals('1.0', $mutated->version());
     }
 
-    /**
-     * Test message with added header
-     */
-    public function testAddedHeader()
+    public function testAddedHeader(): void
     {
         /** @var StreamInterface|MockObject $psrStream */
         $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
         /** @var MessageInterface|MockObject $psrMessage */
-        $psrMessage  = $this->getMockForAbstractClass(MessageInterface::class);
+        $psrMessage = $this->getMockForAbstractClass(MessageInterface::class);
         $psrMessage2 = clone $psrMessage;
-        $psrMessage->expects($this->at(0))->method('withHeader')->with('Host', ['example.com'])->willReturn(
-            $psrMessage2
-        );
+        $psrMessage
+            ->expects($this->at(0))->method('withHeader')->with('Host', ['example.com'])->willReturn($psrMessage2);
         $psrMessage->expects($this->at(1))->method('getHeader')->with('Host')->willReturn(['example.net']);
         $psrMessage2->expects($this->at(0))->method('getHeader')->with('Host')->willReturn(['example.com']);
         $psrMessage2->expects($this->at(1))->method('getHeader')->with('host')->willReturn(['example.com']);
@@ -95,25 +85,22 @@ class MessageTest extends TestCase
         $this->assertSame("Host: example.com\r\n\r\n", (string)$mutated);
     }
 
-    public function testWithAddedHeader()
+    public function testWithAddedHeader(): void
     {
         /** @var StreamInterface|MockObject $psrStream */
         $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
         /** @var MessageInterface|MockObject $psrMessage */
-        $psrMessage  = $this->getMockForAbstractClass(MessageInterface::class);
+        $psrMessage = $this->getMockForAbstractClass(MessageInterface::class);
         $psrMessage2 = clone $psrMessage;
-        $psrMessage->expects($this->at(0))->method('withAddedHeader')->with('Host', 'example.net')->willReturn(
-            $psrMessage2
-        );
+        $psrMessage
+            ->expects($this->at(0))->method('withAddedHeader')->with('Host', 'example.net')->willReturn($psrMessage2);
         $psrMessage->expects($this->at(1))->method('getHeader')->with('Host')->willReturn(['example.com']);
         $psrMessage->expects($this->at(2))->method('getHeaders')->willReturn(['Host' => ['example.com']]);
         $psrMessage2->expects($this->at(0))->method('getHeader')->with('Host')->willReturn(['example.com']);
-        $psrMessage2->expects($this->at(1))->method('getHeaders')->willReturn(
-            ['Host' => ['example.com', 'example.net']]
-        );
-        $psrMessage2->expects($this->at(2))->method('getHeaders')->willReturn(
-            ['Host' => ['example.com', 'example.net']]
-        );
+        $psrMessage2
+            ->expects($this->at(1))->method('getHeaders')->willReturn(['Host' => ['example.com', 'example.net']]);
+        $psrMessage2
+            ->expects($this->at(2))->method('getHeaders')->willReturn(['Host' => ['example.com', 'example.net']]);
         $psrMessage2->expects($this->at(3))->method('getBody')->willReturn($psrStream);
         $psrStream->expects($this->at(0))->method('getContents')->willReturn('');
 
@@ -128,15 +115,12 @@ class MessageTest extends TestCase
         $this->assertSame("Host: example.com,example.net\r\n\r\n", (string)$mutated);
     }
 
-    /**
-     * Test message without removed header
-     */
-    public function testRemovedHeader()
+    public function testRemovedHeader(): void
     {
         /** @var StreamInterface|MockObject $psrStream */
         $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
         /** @var MessageInterface|MockObject $psrMessage */
-        $psrMessage  = $this->getMockForAbstractClass(MessageInterface::class);
+        $psrMessage = $this->getMockForAbstractClass(MessageInterface::class);
         $psrMessage2 = clone $psrMessage;
         $psrMessage->expects($this->at(0))->method('withoutHeader')->with('Host')->willReturn($psrMessage2);
         $psrMessage->expects($this->at(1))->method('getHeader')->with('Host')->willReturn(['example.com']);
@@ -155,15 +139,12 @@ class MessageTest extends TestCase
         $this->assertSame("\r\n", (string)$mutated);
     }
 
-    /**
-     * Test message with body
-     */
-    public function testBody()
+    public function testBody(): void
     {
         /** @var StreamInterface|MockObject $psrStream */
         $psrStream = $this->getMockForAbstractClass(StreamInterface::class);
         /** @var MessageInterface|MockObject $psrMessage */
-        $psrMessage  = $this->getMockForAbstractClass(MessageInterface::class);
+        $psrMessage = $this->getMockForAbstractClass(MessageInterface::class);
         $psrMessage2 = clone $psrMessage;
         $psrMessage->expects($this->at(0))->method('withBody')->with($psrStream)->willReturn($psrMessage2);
         $psrMessage2->expects($this->any())->method('getBody')->willReturn($psrStream);
@@ -178,11 +159,11 @@ class MessageTest extends TestCase
         $this->assertSame("\r\nHello world!", (string)$mutated);
     }
 
-    public function testBodyStream()
+    public function testBodyStream(): void
     {
         $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost'), [], 'Hello world!'));
 
         $this->assertInstanceOf(StreamInterface::class, $message->bodyStream());
-        $this->assertSame('Hello world!', (string)$message->body());
+        $this->assertSame('Hello world!', $message->body());
     }
 }

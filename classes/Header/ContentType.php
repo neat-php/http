@@ -23,59 +23,34 @@ use Neat\Http\Message;
  */
 class ContentType implements Header
 {
-    const HEADER = 'Content-Type';
+    public const HEADER = 'Content-Type';
 
-    /** @var string */
-    private $type;
+    private string $type;
+    private ?string $charset;
+    private ?string $boundary;
 
-    /** @var string|null */
-    private $charset;
-
-    /** @var string|null */
-    private $boundary;
-
-    /**
-     * ContentType constructor
-     *
-     * @param string      $type
-     * @param string|null $charset
-     * @param string|null $boundary
-     */
-    public function __construct(string $type, string $charset = null, string $boundary = null)
+    public function __construct(string $type, ?string $charset = null, ?string $boundary = null)
     {
-        $this->type     = $type;
-        $this->charset  = $charset;
+        $this->type = $type;
+        $this->charset = $charset;
         $this->boundary = $boundary;
     }
 
-    /**
-     * @return string
-     */
     public function type(): string
     {
         return $this->type;
     }
 
-    /**
-     * @return string|null
-     */
-    public function charset()
+    public function charset(): ?string
     {
         return $this->charset;
     }
 
-    /**
-     * @return string|null
-     */
-    public function boundary()
+    public function boundary(): ?string
     {
         return $this->boundary;
     }
 
-    /**
-     * @param Message $message
-     * @return Message
-     */
     public function write(Message $message): Message
     {
         $header = "$this->type";
@@ -89,11 +64,7 @@ class ContentType implements Header
         return $message->withHeader(self::HEADER, $header);
     }
 
-    /**
-     * @param Message $message
-     * @return self|null
-     */
-    public static function read(Message $message)
+    public static function read(Message $message): ?self
     {
         $header = $message->header(self::HEADER);
 
@@ -101,17 +72,17 @@ class ContentType implements Header
             return null;
         }
 
-        $parts    = explode('; ', $header->value());
-        $value    = array_shift($parts);
-        $charset  = null;
+        $parts = explode('; ', $header->value());
+        $value = array_shift($parts);
+        $charset = null;
         $boundary = null;
         foreach ($parts as $part) {
             if (strpos($part, 'charset') === 0) {
-                list(, $charset) = explode('=', $part);
+                [, $charset] = explode('=', $part);
                 continue;
             }
             if (strpos($part, 'boundary') === 0) {
-                list(, $boundary) = explode('=', $part);
+                [, $boundary] = explode('=', $part);
                 continue;
             }
         }

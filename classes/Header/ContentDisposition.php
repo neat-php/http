@@ -42,62 +42,37 @@ use Neat\Http\Message;
  */
 class ContentDisposition implements Header
 {
-    const HEADER = 'Content-Disposition';
+    public const HEADER = 'Content-Disposition';
 
-    const INLINE = 'inline';
-    const ATTACHMENT = 'attachment';
+    public const INLINE = 'inline';
+    public const ATTACHMENT = 'attachment';
 
-    /** @var string */
-    private $disposition;
+    private string $disposition;
+    private ?string $filename;
+    private ?string $fieldname;
 
-    /** @var string|null */
-    private $filename;
-
-    /** @var string|null */
-    private $fieldname;
-
-    /**
-     * ContentDisposition constructor
-     *
-     * @param string      $disposition
-     * @param string|null $filename
-     * @param string|null $fieldname
-     */
-    public function __construct(string $disposition, string $filename = null, string $fieldname = null)
+    public function __construct(string $disposition, ?string $filename = null, ?string $fieldname = null)
     {
         $this->disposition = $disposition;
-        $this->filename    = $filename;
-        $this->fieldname   = $fieldname;
+        $this->filename = $filename;
+        $this->fieldname = $fieldname;
     }
 
-    /**
-     * @return string
-     */
     public function disposition(): string
     {
         return $this->disposition;
     }
 
-    /**
-     * @return string|null
-     */
-    public function filename()
+    public function filename(): ?string
     {
         return $this->filename;
     }
 
-    /**
-     * @return string|null
-     */
-    public function fieldname()
+    public function fieldname(): ?string
     {
         return $this->fieldname;
     }
 
-    /**
-     * @param Message $message
-     * @return Message
-     */
     public function write(Message $message): Message
     {
         $header = "$this->disposition";
@@ -111,28 +86,24 @@ class ContentDisposition implements Header
         return $message->withHeader(self::HEADER, $header);
     }
 
-    /**
-     * @param Message $message
-     * @return self|null
-     */
-    public static function read(Message $message)
+    public static function read(Message $message): ?self
     {
         $header = $message->header(self::HEADER);
         if (!$header) {
             return null;
         }
 
-        $parts    = explode('; ', $header->value());
-        $value    = array_shift($parts);
+        $parts = explode('; ', $header->value());
+        $value = array_shift($parts);
         $filename = null;
-        $name     = null;
+        $name = null;
         foreach ($parts as $part) {
             if (stripos($part, 'filename') === 0) {
-                list(, $filename) = explode('=', $part);
+                [, $filename] = explode('=', $part);
                 continue;
             }
             if (stripos($part, 'name') === 0) {
-                list(, $name) = explode('=', $part);
+                [, $name] = explode('=', $part);
                 continue;
             }
         }
@@ -140,7 +111,7 @@ class ContentDisposition implements Header
         return new self(
             $value,
             null !== $filename ? trim($filename, "\"") : null,
-            null !== $name ? trim($name, "\"") : null
+            null !== $name ? trim($name, "\"") : null,
         );
     }
 }

@@ -10,10 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class ContentTypeTest extends TestCase
 {
-    /**
-     * Test minimal
-     */
-    public function testMinimal()
+    public function testMinimal(): void
     {
         $header = new ContentType('text/plain');
 
@@ -22,10 +19,7 @@ class ContentTypeTest extends TestCase
         $this->assertNull($header->boundary());
     }
 
-    /**
-     * Test with charset and boundary
-     */
-    public function testWithCharsetAndBoundary()
+    public function testWithCharsetAndBoundary(): void
     {
         $header = new ContentType('application/json', 'utf-8', 'boundary');
 
@@ -34,10 +28,7 @@ class ContentTypeTest extends TestCase
         $this->assertSame('boundary', $header->boundary());
     }
 
-    /**
-     * Test message
-     */
-    public function testMessage()
+    public function testMessage(): void
     {
         $message = new MessageMock(new ServerRequest('POST', new Uri('https://localhost')));
         $this->assertNull($message->contentType());

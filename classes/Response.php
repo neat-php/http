@@ -2,6 +2,7 @@
 
 namespace Neat\Http;
 
+use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -10,51 +11,28 @@ use Psr\Http\Message\ResponseInterface;
 class Response extends Message
 {
     /** @var ResponseInterface */
-    protected $message;
+    protected MessageInterface $message;
 
-    /**
-     * Response constructor
-     *
-     * @param ResponseInterface $response
-     */
     public function __construct(ResponseInterface $response)
     {
         parent::__construct($response);
     }
 
-    /**
-     * Get response as a string
-     *
-     * @return string
-     */
     public function __toString(): string
     {
         return $this->statusLine() . self::EOL . parent::__toString();
     }
 
-    /**
-     * @return ResponseInterface
-     */
     public function psr(): ResponseInterface
     {
         return $this->message;
     }
 
-    /**
-     * Get status line
-     *
-     * @return string
-     */
     public function statusLine(): string
     {
-        return 'HTTP/' . $this->version() . ' ' . $this->status();
+        return "HTTP/{$this->version()} {$this->status()}";
     }
 
-    /**
-     * Get status
-     *
-     * @return Status
-     */
     public function status(): Status
     {
         if ($this->message->getStatusCode()) {
@@ -66,11 +44,9 @@ class Response extends Message
     }
 
     /**
-     * Status
-     *
      * @param int|Status $status
      */
-    protected function setStatus($status)
+    protected function setStatus($status): void
     {
         if ($status instanceof Status) {
             $this->message = $this->message->withStatus($status->code(), $status->reason());
@@ -80,10 +56,8 @@ class Response extends Message
     }
 
     /**
-     * Get response with status
-     *
      * @param int|Status $status
-     * @return Response
+     * @return static
      */
     public function withStatus($status)
     {

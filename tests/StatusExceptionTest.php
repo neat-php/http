@@ -2,16 +2,13 @@
 
 namespace Neat\Http\Test;
 
-use PHPUnit\Framework\TestCase;
 use Neat\Http\Exception\StatusException;
 use Neat\Http\Status;
+use PHPUnit\Framework\TestCase;
 
 class StatusExceptionTest extends TestCase
 {
-    /**
-     * Test exception throwing
-     */
-    public function testThrowException()
+    public function testThrowException(): void
     {
         $this->expectException(StatusException::class);
         $this->expectExceptionCode(404);
@@ -20,10 +17,7 @@ class StatusExceptionTest extends TestCase
         throw new StatusException(404);
     }
 
-    /**
-     * Test default status
-     */
-    public function testDefaultStatus()
+    public function testDefaultStatus(): void
     {
         $exception = new StatusException(403);
 
@@ -36,10 +30,7 @@ class StatusExceptionTest extends TestCase
         $this->assertSame('Forbidden', $exception->getMessage());
     }
 
-    /**
-     * Test custom status
-     */
-    public function testCustomStatus()
+    public function testCustomStatus(): void
     {
         $exception = new StatusException(403, 'You Shall Not Pass!');
 

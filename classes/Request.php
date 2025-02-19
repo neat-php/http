@@ -2,6 +2,7 @@
 
 namespace Neat\Http;
 
+use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 
 /**
@@ -10,42 +11,24 @@ use Psr\Http\Message\RequestInterface;
 class Request extends Message
 {
     /** @var RequestInterface */
-    protected $message;
+    protected MessageInterface $message;
 
-    /**
-     * Request constructor
-     *
-     * @param RequestInterface $request
-     */
     public function __construct(RequestInterface $request)
     {
         parent::__construct($request);
     }
 
-    /**
-     * Get request as a string
-     *
-     * @return string
-     */
     public function __toString(): string
     {
         return $this->requestLine() . self::EOL . parent::__toString();
     }
 
-    /**
-     * @return RequestInterface
-     */
-    public function psr()
+    public function psr(): RequestInterface
     {
         return $this->message;
     }
 
-    /**
-     * Get request line
-     *
-     * @return string
-     */
-    public function requestLine()
+    public function requestLine(): string
     {
         $url = $this->url();
         $uri = $url->path();
@@ -56,33 +39,20 @@ class Request extends Message
         return sprintf('%s %s HTTP/%s', $this->method(), $uri, $this->version());
     }
 
-    /**
-     * Get method
-     *
-     * @return string
-     */
-    public function method()
+    public function method(): string
     {
         return $this->message->getMethod();
     }
 
-    /**
-     * Get URL
-     *
-     * @return Url
-     */
-    public function url()
+    public function url(): Url
     {
         return new Url($this->message->getUri());
     }
 
     /**
-     * Get new request with method
-     *
-     * @param string $method
      * @return static
      */
-    public function withMethod($method)
+    public function withMethod(string $method)
     {
         $new = clone $this;
         $new->message = $this->message->withMethod($method);
@@ -91,14 +61,11 @@ class Request extends Message
     }
 
     /**
-     * Get new request with URL
-     *
-     * @param Url $url
      * @return static
      */
     public function withUrl(Url $url)
     {
-        $new          = clone $this;
+        $new = clone $this;
         $new->message = $this->message->withUri($url->psr());
 
         return $new;

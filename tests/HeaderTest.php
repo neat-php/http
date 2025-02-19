@@ -7,10 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class HeaderTest extends TestCase
 {
-    /**
-     * Test custom status
-     */
-    public function testHeader()
+    public function testHeader(): void
     {
         $header = new Header('Content-Type', 'text/html');
 
@@ -20,7 +17,7 @@ class HeaderTest extends TestCase
         $this->assertSame('Content-Type: text/html', (string)$header);
     }
 
-    public function testMultipleValues()
+    public function testMultipleValues(): void
     {
         $header = new Header('Foo', 'bar', 'baz');
 
@@ -28,7 +25,7 @@ class HeaderTest extends TestCase
         $this->assertSame('Foo: bar,baz', $header->line());
     }
 
-    public function testHeaderNormalization()
+    public function testHeaderNormalization(): void
     {
         $header = new Header('content-type', 'text/html');
 
@@ -36,7 +33,7 @@ class HeaderTest extends TestCase
         $this->assertSame('Content-Type: text/html', $header->line());
     }
 
-    public function testValueNormalization()
+    public function testValueNormalization(): void
     {
         $header = new Header('Foo', ' bar', "baz\t");
 

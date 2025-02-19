@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Parameter-, property- & return type-hints.
+- Constant visibility.
+
 ### Removed
 - Input, Router, Session and Download/Redirect implementations.
 - Receiver and Transmitter interfaces.
@@ -13,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ContentType getValue(), getCharset() and getBoundary() methods.
 - Url getUri() method.
 - ServerRequest and Upload. Use Neat\Http\Server\Request and Neat\Http\Server\Upload instead.
+- Redundant doc-blocks.
+
+### Fixed
+- Implicit optional arguments.
 
 ## [0.6.4] - 2021-02-12
 ### Fixed
@@ -59,6 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - Removed strict_types=1 declaration.
+- PHP 7.0-7.3 support.
 
 ### Fixed
 - Readme documentation examples.
